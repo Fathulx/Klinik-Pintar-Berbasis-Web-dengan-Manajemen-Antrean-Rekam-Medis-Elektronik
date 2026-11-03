@@ -4,10 +4,6 @@ Aplikasi demo sistem informasi klinik untuk mengelola reservasi antrean dan
 rekam medis. Aplikasi dibuat dengan PHP dan MySQL/MariaDB, dengan XAMPP sebagai
 salah satu cara menjalankannya secara lokal.
 
-> **Penting:** repositori saat ini belum menyertakan berkas skema database SQL.
-> Aplikasi belum dapat dijalankan dari instalasi baru sebelum struktur tabel
-> database yang sesuai tersedia.
-
 ## Persyaratan
 
 - PHP dengan ekstensi PDO MySQL (`pdo_mysql`)
@@ -18,11 +14,11 @@ salah satu cara menjalankannya secara lokal.
 
 1. Letakkan atau clone proyek ke `htdocs/klinik`.
 2. Jalankan Apache dan MySQL dari XAMPP.
-3. Siapkan database `klinik_pintar` beserta tabel-tabel yang dibutuhkan.
-   Skema database belum tersedia di proyek ini; minta berkas skema kepada
-   pemilik proyek. Jangan menggunakan dump database berisi data pasien untuk
-   keperluan setup atau membagikannya ke publik.
-4. Buat `config/config.local.php` secara lokal. File ini sengaja tidak
+3. Buat database kosong bernama `klinik_pintar` melalui phpMyAdmin atau MySQL.
+4. Pilih database `klinik_pintar`, lalu impor [`database/schema.sql`](./database/schema.sql)
+   melalui phpMyAdmin atau klien MySQL. Skema membuat tabel dan relasi tanpa
+   memasukkan data pasien maupun akun demo.
+5. Buat `config/config.local.php` secara lokal. File ini sengaja tidak
    disimpan di Git. Contoh konfigurasi:
 
    ```php
@@ -38,7 +34,7 @@ salah satu cara menjalankannya secara lokal.
 
    Ganti nama pengguna dan password sesuai konfigurasi MySQL lokal Anda.
    Jangan masukkan kredensial produksi ke file yang di-commit.
-5. Buka `http://localhost/klinik/` di browser.
+6. Buka `http://localhost/klinik/` di browser.
 
 ## Sebelum deploy ke server
 
