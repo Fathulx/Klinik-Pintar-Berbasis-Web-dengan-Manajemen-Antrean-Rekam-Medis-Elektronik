@@ -12,15 +12,15 @@ salah satu cara menjalankannya secara lokal.
 
 ## Menjalankan secara lokal
 
-1. Letakkan atau clone proyek ke `htdocs/klinik`.
-2. Jalankan Apache dan MySQL dari XAMPP.
-3. Buat database kosong bernama `klinik_pintar` melalui phpMyAdmin atau MySQL.
-4. Pilih database `klinik_pintar`, lalu impor [`database/schema.sql`](./database/schema.sql)
-   melalui phpMyAdmin atau klien MySQL. Skema membuat tabel dan relasi tanpa
-   memasukkan data pasien maupun akun demo.
-5. Untuk mencoba aplikasi secara lokal, impor [`database/seed_demo.sql`](./database/seed_demo.sql)
-   sekali pada database kosong. File ini membuat akun fiktif untuk setiap
-   peran dan jadwal praktik contoh. Semua akun demo memakai password
+1. Clone atau salin proyek ke `C:\xampp\htdocs\klinik`.
+2. Jalankan **Apache** dan **MySQL** dari XAMPP Control Panel.
+3. Buka `http://localhost/phpmyadmin`, buat database bernama `klinik_pintar`,
+   lalu pilih database tersebut.
+4. Impor [`database/schema.sql`](./database/schema.sql) melalui tab **Import**
+   di phpMyAdmin. File ini membuat tabel dan relasi, tanpa memasukkan data.
+5. Untuk demo lokal, impor [`database/seed_demo.sql`](./database/seed_demo.sql)
+   setelah skema berhasil dibuat. Seed ini membuat akun fiktif dan jadwal
+   contoh; impor hanya sekali pada database kosong. Semua akun memakai password
    `Demo@12345`:
 
    | Peran | Email |
@@ -34,23 +34,23 @@ salah satu cara menjalankannya secara lokal.
    `laras.w@demo.klinik`, dan `andi.pratama@demo.klinik`.
    **Akun dan password ini hanya untuk demo lokal. Jangan gunakan atau impor
    seed ini pada server publik/produksi.**
-6. Buat `config/config.local.php` secara lokal. File ini sengaja tidak
-   disimpan di Git. Contoh konfigurasi:
+6. Buat file `config/config.local.php` secara lokal. File ini tidak ada di
+   GitHub dan tidak boleh diunggah. Untuk instalasi XAMPP standar, isinya:
 
    ```php
    <?php
    define('DB_HOST', 'localhost');
    define('DB_NAME', 'klinik_pintar');
-   define('DB_USER', 'nama_user_database');
-   define('DB_PASS', 'password_database');
+   define('DB_USER', 'root');
+   define('DB_PASS', '');
    define('APP_ENV', 'development');
    define('BASE_URL', '/klinik');
    define('TAMPILKAN_AKUN_DEMO', true);
    ```
 
-   Ganti nama pengguna dan password sesuai konfigurasi MySQL lokal Anda.
-   Jangan masukkan kredensial produksi ke file yang di-commit.
-7. Buka `http://localhost/klinik/` di browser.
+   Kredensial di atas hanya cocok untuk konfigurasi XAMPP lokal bawaan. Jika
+   MySQL Anda memakai password atau nama pengguna berbeda, sesuaikan nilainya.
+7. Buka `http://localhost/klinik/` dan masuk menggunakan akun demo di atas.
 
 ## Sebelum deploy ke server
 
