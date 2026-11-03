@@ -18,7 +18,23 @@ salah satu cara menjalankannya secara lokal.
 4. Pilih database `klinik_pintar`, lalu impor [`database/schema.sql`](./database/schema.sql)
    melalui phpMyAdmin atau klien MySQL. Skema membuat tabel dan relasi tanpa
    memasukkan data pasien maupun akun demo.
-5. Buat `config/config.local.php` secara lokal. File ini sengaja tidak
+5. Untuk mencoba aplikasi secara lokal, impor [`database/seed_demo.sql`](./database/seed_demo.sql)
+   sekali pada database kosong. File ini membuat akun fiktif untuk setiap
+   peran dan jadwal praktik contoh. Semua akun demo memakai password
+   `Demo@12345`:
+
+   | Peran | Email |
+   | --- | --- |
+   | Super Admin | `superadmin@demo.klinik` |
+   | Admin | `admin@demo.klinik` |
+   | Dokter | `siti.rahma@demo.klinik` |
+   | Pasien | `pasien@demo.klinik` |
+
+   Akun dokter demo lainnya: `budi.santoso@demo.klinik`,
+   `laras.w@demo.klinik`, dan `andi.pratama@demo.klinik`.
+   **Akun dan password ini hanya untuk demo lokal. Jangan gunakan atau impor
+   seed ini pada server publik/produksi.**
+6. Buat `config/config.local.php` secara lokal. File ini sengaja tidak
    disimpan di Git. Contoh konfigurasi:
 
    ```php
@@ -34,7 +50,7 @@ salah satu cara menjalankannya secara lokal.
 
    Ganti nama pengguna dan password sesuai konfigurasi MySQL lokal Anda.
    Jangan masukkan kredensial produksi ke file yang di-commit.
-6. Buka `http://localhost/klinik/` di browser.
+7. Buka `http://localhost/klinik/` di browser.
 
 ## Sebelum deploy ke server
 
@@ -44,6 +60,9 @@ salah satu cara menjalankannya secara lokal.
 - Tinjau akses serta penggunaan `tools/reset_demo.php`. Skrip ini menghapus
   data aplikasi sebelum mengisi ulang data demo; jangan aktifkan endpoint reset
   untuk penggunaan publik/produksi.
+- Jangan impor `database/seed_demo.sql` di produksi. Buat akun administrator
+  awal melalui proses provisioning aman, lalu gunakan akun tersebut untuk
+  membuat akun staf dengan password unik.
 - Jangan gunakan data pasien sungguhan pada demo atau lingkungan pengembangan.
 
 ## Jangan unggah ke GitHub
