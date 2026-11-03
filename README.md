@@ -52,18 +52,51 @@ salah satu cara menjalankannya secara lokal.
    MySQL Anda memakai password atau nama pengguna berbeda, sesuaikan nilainya.
 7. Buka `http://localhost/klinik/` dan masuk menggunakan akun demo di atas.
 
-## Sebelum deploy ke server
+## Panduan serah-terima deploy
 
-- Buat konfigurasi lokal di luar Git dengan kredensial database yang kuat.
-- Atur `APP_ENV` ke `production` dan `BASE_URL` sesuai alamat aplikasi.
-- Pastikan error PHP tidak ditampilkan ke pengunjung dan HTTPS diaktifkan.
-- Tinjau akses serta penggunaan `tools/reset_demo.php`. Skrip ini menghapus
-  data aplikasi sebelum mengisi ulang data demo; jangan aktifkan endpoint reset
-  untuk penggunaan publik/produksi.
-- Jangan impor `database/seed_demo.sql` di produksi. Buat akun administrator
-  awal melalui proses provisioning aman, lalu gunakan akun tersebut untuk
-  membuat akun staf dengan password unik.
-- Jangan gunakan data pasien sungguhan pada demo atau lingkungan pengembangan.
+Bagikan URL repository ini kepada pengelola server. Source code di branch
+`main` tidak berisi konfigurasi lokal atau data pasien. Untuk memasangnya:
+
+1. Pastikan server menyediakan PHP versi yang masih mendapat dukungan keamanan,
+   ekstensi `pdo_mysql` dan `mbstring`, MySQL/MariaDB, serta Apache. Uji aplikasi
+   pada versi PHP server sebelum dibuka untuk pengguna.
+2. Clone repository dan arahkan document root Apache ke folder proyek. Aktifkan
+   `mod_rewrite`/dukungan `.htaccess` jika diperlukan, lalu pastikan HTTPS aktif.
+3. Buat database kosong untuk aplikasi dan impor
+   [`database/schema.sql`](./database/schema.sql). Jangan impor
+   [`database/seed_demo.sql`](./database/seed_demo.sql) di server produksi.
+4. Buat `config/config.local.php` hanya di server (jangan commit atau kirim
+   melalui repository). Isi dengan kredensial database khusus aplikasi, lalu
+   atur `APP_ENV` menjadi `production` dan `BASE_URL` sesuai URL/letak aplikasi.
+   Contoh format:
+
+   ```php
+   <?php
+   define('DB_HOST', 'localhost');
+   define('DB_NAME', 'nama_database');
+   define('DB_USER', 'user_aplikasi');
+   define('DB_PASS', 'password_kuat');
+   define('APP_ENV', 'production');
+   define('BASE_URL', '');
+   define('TAMPILKAN_AKUN_DEMO', false);
+   ```
+
+   Sesuaikan `BASE_URL` jika aplikasi dipasang di subdirektori, serta gunakan
+   kredensial yang diberikan penyedia hosting.
+5. Siapkan akun Super Admin awal secara aman. Aplikasi belum memiliki proses
+   provisioning Super Admin produksi yang terdokumentasi; jangan gunakan akun
+   demo atau password yang ada di `seed_demo.sql`. Verifikasi akun awal dan
+   minta pemilik mengganti password sementara sebelum akses diberikan.
+6. Sebelum membuka akses, uji login dan hak akses setiap peran, registrasi
+   pasien, reservasi, antrean, serta penyimpanan rekam medis pada lingkungan
+   staging dengan data fiktif.
+7. Jangan biarkan `tools/reset_demo.php` dapat diakses dari internet. Skrip itu
+   dapat menghapus dan membuat ulang data; hapus atau blokir endpoint tersebut
+   pada deployment produksi.
+
+Jangan gunakan aplikasi ini untuk data pasien sungguhan sebelum keamanan,
+privasi, backup/pemulihan, dan kesiapan operasionalnya ditinjau oleh pihak yang
+bertanggung jawab.
 
 ## Jangan unggah ke GitHub
 
