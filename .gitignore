@@ -1,0 +1,22 @@
+# kredensial dan pengaturan lokal
+config/config.local.php
+.env
+
+# dokumen internal
+AKUN_DEMO.md
+
+# log dan berkas sementara
+*.log
+error_log
+*.bak
+*.tmp
+Thumbs.db
+.DS_Store
+
+# editor
+.vscode/
+.idea/
+
+# ekspor database yang berisi data
+backup*.sql
+*.sql.gz

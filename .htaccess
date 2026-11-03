@@ -1,0 +1,14 @@
+Options -Indexes
+
+<FilesMatch "\.(sql|md|log|bak|ini|sh)$">
+  Require all denied
+</FilesMatch>
+
+# Paksa HTTPS di server publik (tidak berlaku di localhost)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP_HOST} !^localhost [NC]
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
