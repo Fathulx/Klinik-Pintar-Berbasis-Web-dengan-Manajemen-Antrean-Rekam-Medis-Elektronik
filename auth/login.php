@@ -159,6 +159,9 @@ require __DIR__ . '/../includes/public_nav.php';
             <label class="block text-sm font-medium" for="password">Password</label>
             <input id="password" name="password" type="password" autocomplete="current-password" required
                    class="mt-1.5 w-full rounded-xl border border-garis bg-white px-3 py-3 text-sm focus:border-klinik focus:outline-none focus:ring-1 focus:ring-klinik">
+            <p class="mt-2 text-right text-sm">
+              <a class="text-klinik underline" href="<?= e(url('auth/lupa_password.php')) ?>">Lupa password?</a>
+            </p>
           </div>
           <button class="w-full rounded-xl bg-klinik px-4 py-3 text-sm font-medium text-white hover:bg-ink">Masuk</button>
         </form>

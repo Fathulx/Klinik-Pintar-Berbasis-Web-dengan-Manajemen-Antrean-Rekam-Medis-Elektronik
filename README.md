@@ -52,6 +52,65 @@ salah satu cara menjalankannya secara lokal.
    MySQL Anda memakai password atau nama pengguna berbeda, sesuaikan nilainya.
 7. Buka `http://localhost/klinik/` dan masuk menggunakan akun demo di atas.
 
+## Pembaruan database (notifikasi & reset password)
+
+Database yang dibuat **sebelum** fitur notifikasi antrean dan reset password
+perlu tabel tambahan. Instalasi baru dari `schema.sql` sudah mencakupnya.
+
+1. **Backup dulu**: di phpMyAdmin pilih database `klinik_pintar` → tab
+   **Export** → **Go**, lalu simpan file `.sql`-nya di tempat aman (jangan
+   di-commit).
+2. Masih di database yang sama, buka tab **Import** dan impor
+   [`database/migrations/2026-11-12_notifikasi_reset.sql`](./database/migrations/2026-11-12_notifikasi_reset.sql).
+   File ini hanya menambah tabel `notifikasi`, `password_resets`, dan kolom
+   `reservasi.notif_dekat_at`; data lama tidak diubah. Aman diimpor ulang.
+3. Di server **MySQL** (bukan MariaDB), jalankan baris `ALTER TABLE` di file
+   itu tanpa `IF NOT EXISTS`, sekali saja.
+
+Notifikasi "giliran sudah dekat" muncul di aplikasi pasien saat pasien aktif
+di depannya tinggal `NOTIF_ANTREAN_SISA` (bawaan 3), mulai
+`NOTIF_MENIT_SEBELUM_PRAKTIK` (bawaan 60) menit sebelum jam praktik. Kedua
+nilai bisa diubah di `config.local.php`.
+
+## Email (reset password pasien)
+
+Pasien yang lupa password dapat meminta tautan reset lewat email. Aplikasi
+mengirim email melalui SMTP Gmail memakai PHPMailer (sudah disertakan di
+`lib/PHPMailer`, tanpa Composer).
+
+1. Pakai akun Gmail **khusus aplikasi**, bukan Gmail pribadi.
+2. Aktifkan **Verifikasi 2 Langkah** di <https://myaccount.google.com/security>.
+3. Buat **App Password** di <https://myaccount.google.com/apppasswords>
+   (16 huruf, hanya tampil sekali).
+4. Tambahkan ke `config/config.local.php` (contoh nilai fiktif):
+
+   ```php
+   define('APP_URL', 'http://localhost/klinik');   // server: https://domain-anda
+   define('SMTP_USER', 'akun.aplikasi@gmail.com');
+   define('SMTP_PASS', 'abcdefghijklmnop');         // App Password, bukan password Gmail
+   ```
+
+   Opsional: `SMTP_HOST` (bawaan `smtp.gmail.com`), `SMTP_PORT` (587),
+   `SMTP_SECURE` (`tls`), `SMTP_FROM`, `SMTP_FROM_NAME`.
+
+Email reset bisa masuk ke folder **Spam** pada awalnya. Beberapa hosting
+memblokir koneksi SMTP keluar (port 587/465); jika begitu, ganti nilai `SMTP_*`
+dengan SMTP dari penyedia hosting tanpa mengubah kode. Gmail membatasi sekitar
+500 email per hari.
+
+Hanya akun **pasien** yang dapat mereset lewat email. Password dokter direset
+oleh Admin, password admin oleh Super Admin, dan Super Admin oleh Super Admin
+lain atau lewat skrip `php tools/reset_superadmin.php` di server.
+
+## Menjalankan test
+
+Test memakai database terpisah `klinik_pintar_test` yang dibuat ulang otomatis
+(database aplikasi tidak disentuh):
+
+```powershell
+D:\XAMPP\php\php.exe tests\run.php
+```
+
 ## Panduan serah-terima deploy
 
 Bagikan URL repository ini kepada pengelola server. Source code di branch
