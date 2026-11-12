@@ -48,3 +48,24 @@ function test_daftar_setelah_id()
     sama([$id3, $id2], array_map('intval', array_column($baru, 'id')), 'hanya setelah id1');
     sama('P3', $baru[0]['pesan'], 'kolom pesan ada');
 }
+
+function test_data_lonceng()
+{
+    $pdo = test_pdo();
+    $a = buat_user_uji($pdo, 'user');
+    buat_notifikasi($pdo, $a, 'J1', 'P1');
+    $id2 = buat_notifikasi($pdo, $a, 'J2', 'P2');
+    sama(['belum' => 2, 'setelah' => $id2], data_lonceng($pdo, $a), 'jumlah dan id terbaru');
+}
+
+function test_data_lonceng_tanpa_tabel_tidak_error()
+{
+    // database yang belum dimigrasi: lonceng disembunyikan, halaman tetap jalan
+    $pdo = test_pdo();
+    $a = buat_user_uji($pdo, 'user');
+    $pdo->exec('DROP TABLE notifikasi');
+    $logLama = ini_set('error_log', sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'klinik_uji_lonceng.log');
+    $hasil = data_lonceng($pdo, $a);
+    ini_set('error_log', $logLama);
+    sama(null, $hasil, 'null bila tabel belum ada');
+}

@@ -29,6 +29,23 @@ function daftar_notifikasi(PDO $pdo, $userId, $setelahId = 0, $batas = 20)
     return $st->fetchAll();
 }
 
+// Data untuk ikon lonceng: ['belum' => jumlah belum dibaca, 'setelah' => id
+// terbaru]. Mengembalikan null (lonceng disembunyikan) bila gagal, misalnya
+// migrasi belum diimpor, agar halaman pasien tetap bisa dibuka.
+function data_lonceng(PDO $pdo, $userId)
+{
+    try {
+        $terbaru = daftar_notifikasi($pdo, $userId, 0, 1);
+        return [
+            'belum'   => jumlah_notif_belum_dibaca($pdo, $userId),
+            'setelah' => $terbaru ? (int) $terbaru[0]['id'] : 0,
+        ];
+    } catch (PDOException $ex) {
+        error_log('data_lonceng: ' . $ex->getMessage());
+        return null;
+    }
+}
+
 // $id null berarti menandai semua notifikasi milik user.
 function tandai_notif_dibaca(PDO $pdo, $userId, $id = null)
 {

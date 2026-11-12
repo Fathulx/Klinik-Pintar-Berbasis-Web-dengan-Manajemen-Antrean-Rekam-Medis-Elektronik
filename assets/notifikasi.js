@@ -1,7 +1,24 @@
 // Polling notifikasi pasien setiap 15 detik: memperbarui badge lonceng,
 // menampilkan toast + bunyi + getar untuk notifikasi baru, dan memperbarui
 // jumlah pasien di depan pada karcis antrean.
+
+// Menentukan tindakan dari respons polling:
+//  'data'       : JSON normal, proses isinya
+//  'sesi_habis' : 401/403, atau dialihkan ke halaman HTML (login/ganti password)
+//  'coba_lagi'  : gangguan server sesaat (5xx dan lainnya), lanjutkan polling
+function nilaiRespons(status, contentType, dialihkan) {
+  var json = (contentType || '').indexOf('application/json') !== -1;
+  if (status === 401 || status === 403) return 'sesi_habis';
+  if (status >= 200 && status < 300) return json && !dialihkan ? 'data' : 'sesi_habis';
+  return 'coba_lagi';
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { nilaiRespons: nilaiRespons };
+}
+
 (function () {
+  if (typeof document === 'undefined') return;
   var lonceng = document.getElementById('notif-lonceng');
   if (!lonceng || !window.fetch) return;
 
@@ -70,16 +87,36 @@
     setTimeout(function () { el.remove(); }, 8000);
   }
 
-  function berhenti() {
+  // Sesi habis: hentikan polling dan beri tahu pasien dengan banner tetap,
+  // supaya mereka tidak mengira notifikasi masih berjalan.
+  function sesiHabis() {
     if (timer) clearInterval(timer);
     timer = null;
+    if (document.getElementById('notif-sesi-habis')) return;
+    var b = document.createElement('div');
+    b.id = 'notif-sesi-habis';
+    b.setAttribute('role', 'alert');
+    b.className = 'fixed inset-x-4 top-4 z-50 mx-auto max-w-md rounded-xl border border-bata bg-white px-4 py-3 text-sm shadow-lg';
+    var p = document.createElement('p');
+    p.className = 'font-semibold text-bata';
+    p.textContent = 'Sesi berakhir. Notifikasi antrean berhenti.';
+    var a = document.createElement('a');
+    a.href = lonceng.getAttribute('data-login-url');
+    a.className = 'mt-1 inline-block text-klinik underline';
+    a.textContent = 'Masuk lagi agar tetap menerima notifikasi';
+    b.appendChild(p);
+    b.appendChild(a);
+    document.body.appendChild(b);
+    bunyi();
+    if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
   }
 
   function cek() {
     fetch(cekUrl + '?setelah=' + setelah, { credentials: 'same-origin', headers: { Accept: 'application/json' } })
       .then(function (res) {
-        var json = (res.headers.get('Content-Type') || '').indexOf('application/json') !== -1;
-        if (!res.ok || !json) { berhenti(); return null; } // sesi habis atau dialihkan
+        var t = nilaiRespons(res.status, res.headers.get('Content-Type'), res.redirected);
+        if (t === 'sesi_habis') { sesiHabis(); return null; }
+        if (t === 'coba_lagi') return null; // gangguan sesaat: coba lagi di putaran berikut
         return res.json();
       })
       .then(function (data) {

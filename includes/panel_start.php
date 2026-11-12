@@ -131,15 +131,20 @@ $aktif = isset($aktif) ? $aktif : '';
     </div>
   </aside>
   <main class="min-w-0 flex-1 px-4 py-8 md:px-8 md:py-10">
-    <?php if ($user['role'] === 'user'):
+    <?php
+    $lonceng = null;
+    if ($user['role'] === 'user') {
         require_once __DIR__ . '/notifikasi.php';
-        $notifBelum   = jumlah_notif_belum_dibaca(db(), $user['id']);
-        $notifTerbaru = daftar_notifikasi(db(), $user['id'], 0, 1);
-        $notifSetelah = $notifTerbaru ? (int) $notifTerbaru[0]['id'] : 0;
+        $lonceng = data_lonceng(db(), $user['id']);
+    }
+    if ($lonceng !== null):
+        $notifBelum   = $lonceng['belum'];
+        $notifSetelah = $lonceng['setelah'];
     ?>
       <div class="mb-4 flex justify-end print:hidden">
         <a id="notif-lonceng" href="<?= e(url('user/notifikasi.php')) ?>"
            data-cek-url="<?= e(url('user/notifikasi_cek.php')) ?>" data-setelah="<?= $notifSetelah ?>"
+           data-login-url="<?= e(url('auth/login.php')) ?>"
            aria-label="Notifikasi, <?= (int) $notifBelum ?> belum dibaca"
            class="relative inline-flex items-center gap-2 rounded-xl border border-garis bg-white px-3 py-2 text-sm hover:bg-paper">
           <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
