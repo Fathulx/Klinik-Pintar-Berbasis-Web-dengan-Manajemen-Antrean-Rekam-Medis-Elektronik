@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/antrean.php';
+require_once __DIR__ . '/../includes/notifikasi.php';
 
 $user = require_role('user');
 $pdo  = db();
@@ -19,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hasil = buat_reservasi($pdo, $pasienId, (int) post('jadwal_id'), post('tanggal'));
     if ($hasil['ok']) {
         catat_log('buat_reservasi', 'id ' . $hasil['id'] . ', ' . $hasil['kode']);
+        picu_notif_antrean($pdo, $pasienId);
         set_flash('Reservasi berhasil. Nomor antrean Anda ' . $hasil['kode'] . '.');
         redirect('user/antrean.php');
     }

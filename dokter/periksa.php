@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/antrean.php';
+require_once __DIR__ . '/../includes/notifikasi.php';
 
 $user = require_role('dokter');
 $pdo  = db();
@@ -151,6 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // log hanya mencatat aksi, bukan isi medis
             if ($aksi === 'selesai') {
                 catat_log('selesaikan_pemeriksaan', 'reservasi ' . $id);
+                picu_notif_antrean($pdo);
                 set_flash('Pemeriksaan selesai dan rekam medis dikunci.');
                 redirect('dokter/antrean.php');
             }

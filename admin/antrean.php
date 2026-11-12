@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/antrean.php';
+require_once __DIR__ . '/../includes/notifikasi.php';
 
 $user = require_role('admin');
 $pdo  = db();
@@ -22,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $up->execute([$id, $hariIni]);
         if ($up->rowCount() > 0) {
             catat_log('konfirmasi_hadir', 'reservasi ' . $id);
+            picu_notif_antrean($pdo);
             set_flash('Kehadiran pasien dikonfirmasi.');
         } else {
             set_flash('Status tidak dapat diubah. Muat ulang halaman lalu coba lagi.', 'error');
@@ -34,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $up->execute([$id, $hariIni]);
         if ($up->rowCount() > 0) {
             catat_log('tandai_tidak_hadir', 'reservasi ' . $id);
+            picu_notif_antrean($pdo);
             set_flash('Pasien ditandai tidak hadir.');
         } else {
             set_flash('Status tidak dapat diubah. Muat ulang halaman lalu coba lagi.', 'error');

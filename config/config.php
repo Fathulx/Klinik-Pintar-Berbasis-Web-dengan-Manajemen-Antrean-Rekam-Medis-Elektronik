@@ -13,6 +13,11 @@ if (!defined('APP_ENV'))             { define('APP_ENV', 'development'); }
 if (!defined('BASE_URL'))            { define('BASE_URL', '/klinik'); }
 if (!defined('TAMPILKAN_AKUN_DEMO')) { define('TAMPILKAN_AKUN_DEMO', true); }
 
+// Notifikasi "giliran sudah dekat": dikirim saat pasien aktif di depan
+// tinggal sebanyak ini, mulai sekian menit sebelum jam praktik.
+if (!defined('NOTIF_ANTREAN_SISA'))          { define('NOTIF_ANTREAN_SISA', 3); }
+if (!defined('NOTIF_MENIT_SEBELUM_PRAKTIK')) { define('NOTIF_MENIT_SEBELUM_PRAKTIK', 60); }
+
 date_default_timezone_set('Asia/Jakarta');
 error_reporting(E_ALL);
 ini_set('display_errors', APP_ENV === 'production' ? '0' : '1');
