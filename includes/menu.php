@@ -25,6 +25,7 @@ function menu_panel($role)
     ['Dashboard', 'user/dashboard.php'],
     ['Buat Reservasi', 'user/reservasi.php'],
     ['Antrean Saya', 'user/antrean.php'],
+    ['Notifikasi', 'user/notifikasi.php'],
     ['Riwayat Kunjungan', 'user/riwayat.php'],
 ],
     ];

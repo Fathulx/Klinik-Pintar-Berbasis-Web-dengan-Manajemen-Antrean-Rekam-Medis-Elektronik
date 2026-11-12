@@ -214,7 +214,7 @@ function karcis_html($r)
       <p class="font-mono text-xs text-ink/70"><?= e($r['jam_mulai']) ?> - <?= e($r['jam_selesai']) ?></p>
       <?php if ($aktif): ?>
         <p class="mt-3 border-t border-garis pt-3 text-xs text-ink/70">
-          Di depan Anda <span class="font-mono"><?= (int) $r['di_depan'] ?></span> pasien.
+          Di depan Anda <span class="font-mono" data-di-depan="<?= (int) $r['id'] ?>"><?= (int) $r['di_depan'] ?></span> pasien.
           Perkiraan dilayani sekitar
           <span class="font-mono"><?= e(perkiraan_jam($r['jam_mulai'], (int) $r['di_depan'])) ?></span>.
         </p>

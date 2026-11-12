@@ -27,4 +27,8 @@ if (isset($_SESSION['last_activity'])
         'tipe'  => 'error',
     ];
 }
-$_SESSION['last_activity'] = time();
+// Permintaan latar belakang (misalnya polling notifikasi) mendefinisikan
+// SESI_TANPA_PERPANJANG agar tidak membuat sesi tetap hidup tanpa aktivitas.
+if (!defined('SESI_TANPA_PERPANJANG')) {
+    $_SESSION['last_activity'] = time();
+}

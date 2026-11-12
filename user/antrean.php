@@ -33,6 +33,13 @@ require __DIR__ . '/../includes/panel_start.php';
 ?>
 <h1 class="font-serif text-3xl font-bold text-klinik">Antrean saya</h1>
 
+<?php if (in_array(date('Y-m-d'), array_column($aktifList, 'tanggal'), true)): ?>
+  <div class="mt-4 rounded-xl border border-klinik bg-klinik/10 px-4 py-3 text-sm text-klinik">
+    Biarkan halaman ini terbuka. Anda akan diberi tahu saat antrean tinggal
+    <?= (int) NOTIF_ANTREAN_SISA ?> pasien lagi.
+  </div>
+<?php endif; ?>
+
 <?php if ($aktifList): ?>
   <div class="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
     <?php foreach ($aktifList as $r): ?>
