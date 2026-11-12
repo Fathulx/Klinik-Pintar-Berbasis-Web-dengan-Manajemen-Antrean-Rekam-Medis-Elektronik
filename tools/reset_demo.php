@@ -5,7 +5,7 @@ require_once __DIR__ . '/../includes/antrean.php';
 function jalankan_reset($pdo)
 {
     $pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
-    foreach (['resep', 'rekam_medis', 'reservasi', 'jadwal_dokter', 'dokter', 'pasien', 'poli', 'log_aktivitas', 'users'] as $tabel) {
+    foreach (['notifikasi', 'password_resets', 'resep', 'rekam_medis', 'reservasi', 'jadwal_dokter', 'dokter', 'pasien', 'poli', 'log_aktivitas', 'users'] as $tabel) {
         $pdo->exec("TRUNCATE TABLE `$tabel`");
     }
     $pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
