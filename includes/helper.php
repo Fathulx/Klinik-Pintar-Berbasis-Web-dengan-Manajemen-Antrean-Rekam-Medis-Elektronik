@@ -9,6 +9,12 @@ function url($path = '')
     return BASE_URL . '/' . ltrim($path, '/');
 }
 
+// URL lengkap (dengan domain) untuk tautan yang dibuka dari luar aplikasi, mis. email.
+function url_absolut($path)
+{
+    return rtrim(APP_URL, '/') . '/' . ltrim($path, '/');
+}
+
 function redirect($path)
 {
     header('Location: ' . url($path));
