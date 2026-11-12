@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/akun.php';
 
 $user = require_role('admin');
 $pdo  = db();
@@ -128,11 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 set_flash('Status dokter diubah menjadi ' . $baru . '.');
             }
         } else {
-            $sementara = buat_password_sementara();
-            $pdo->prepare(
-                'UPDATE users SET password = ?, wajib_ganti_password = 1,
-                 login_gagal = 0, terkunci_hingga = NULL WHERE id = ?'
-            )->execute([password_hash($sementara, PASSWORD_DEFAULT), $target['id']]);
+            $sementara = atur_password_sementara($pdo, $target['id']);
             catat_log('reset_password_dokter', $target['email']);
             set_flash('Password direset. Password sementara: ' . $sementara
                 . ' (hanya tampil sekali, catat sekarang).');

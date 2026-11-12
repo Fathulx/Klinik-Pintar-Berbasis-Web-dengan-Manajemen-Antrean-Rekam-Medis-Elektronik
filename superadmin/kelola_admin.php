@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/akun.php';
 
 $user = require_role('super_admin');
 $pdo  = db();
@@ -61,18 +62,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 set_flash('Status akun diubah menjadi ' . $baru . '.');
             }
         } else {
-            $sementara = buat_password_sementara();
-            $pdo->prepare(
-                'UPDATE users SET password = ?, wajib_ganti_password = 1,
-                 login_gagal = 0, terkunci_hingga = NULL WHERE id = ?'
-            )->execute([password_hash($sementara, PASSWORD_DEFAULT), $target['id']]);
+            $sementara = atur_password_sementara($pdo, $target['id']);
             catat_log('reset_password_admin', $target['email']);
+            set_flash('Password direset. Password sementara: ' . $sementara
+                . ' (hanya tampil sekali, catat sekarang).');
+        }
+        redirect('superadmin/kelola_admin.php');
+    } elseif ($aksi === 'reset_superadmin') {
+        // Super Admin hanya dapat mereset Super Admin LAIN; untuk akun sendiri
+        // gunakan halaman Ganti password.
+        $st = $pdo->prepare("SELECT id, email FROM users WHERE id = ? AND role = 'super_admin' AND id <> ?");
+        $st->execute([(int) post('id'), $user['id']]);
+        $target = $st->fetch();
+        if (!$target) {
+            set_flash('Akun Super Admin tidak ditemukan.', 'error');
+        } else {
+            $sementara = atur_password_sementara($pdo, $target['id']);
+            catat_log('reset_password_superadmin', $target['email']);
             set_flash('Password direset. Password sementara: ' . $sementara
                 . ' (hanya tampil sekali, catat sekarang).');
         }
         redirect('superadmin/kelola_admin.php');
     }
 }
+
+$superLain = $pdo->prepare(
+    "SELECT id, nama, email, status FROM users WHERE role = 'super_admin' AND id <> ? ORDER BY nama"
+);
+$superLain->execute([$user['id']]);
+$superLain = $superLain->fetchAll();
 
 $daftar = $pdo->query(
     "SELECT id, nama, email, status FROM users WHERE role = 'admin' ORDER BY nama"
@@ -121,6 +139,37 @@ require __DIR__ . '/../includes/panel_start.php';
         <?php endif; ?>
       </tbody>
     </table>
+
+    <h2 class="mt-10 font-serif text-xl font-bold">Super Admin lain</h2>
+    <p class="mt-1 text-sm text-ink/70">Reset password Super Admin lain jika mereka lupa. Untuk akun Anda sendiri, gunakan Ganti password.</p>
+    <?php if ($superLain): ?>
+      <table class="responsive-table mt-3 w-full border border-garis bg-white text-left text-sm">
+        <thead class="bg-paper font-mono text-[11px] uppercase tracking-widest text-ink/60">
+          <tr><th class="px-3 py-2">Nama</th><th class="px-3 py-2">Email</th><th class="px-3 py-2">Status</th><th class="px-3 py-2">Aksi</th></tr>
+        </thead>
+        <tbody>
+          <?php foreach ($superLain as $s): ?>
+            <tr class="border-t border-garis">
+              <td data-label="Nama" class="px-3 py-2"><?= e($s['nama']) ?></td>
+              <td data-label="Email" class="px-3 py-2 font-mono text-xs"><?= e($s['email']) ?></td>
+              <td data-label="Status" class="px-3 py-2"><?= badge_status($s['status']) ?></td>
+              <td data-label="Aksi" class="whitespace-nowrap px-3 py-2">
+                <form method="post" class="inline" onsubmit="return confirm('Reset password Super Admin ini?')">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="aksi" value="reset_superadmin">
+                  <input type="hidden" name="id" value="<?= (int) $s['id'] ?>">
+                  <button class="action-button">Reset password</button>
+                </form>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    <?php else: ?>
+      <p class="mt-3 border border-bata bg-bata/10 px-3 py-2 text-sm text-bata">
+        Hanya ada satu Super Admin. Disarankan minimal dua akun, agar password bisa direset jika salah satunya lupa.
+      </p>
+    <?php endif; ?>
   </section>
 
   <section>
