@@ -47,6 +47,18 @@ function test_base64url_bolak_balik()
     cek(strpbrk(b64url_enkode(str_repeat("\xff", 30)), '+/=') === false, 'tanpa + / =');
 }
 
+// Di Apache (XAMPP) PHP tidak menemukan openssl.cnf bawaan dan PHP_BINARY
+// menunjuk httpd.exe, jadi proyek membawa openssl.cnf sendiri.
+function test_cnf_bawaan_proyek_cukup_untuk_membuat_kunci()
+{
+    $cnf = webpush_openssl_cnf();
+    cek(is_file($cnf), "file $cnf ada");
+    $kunci = openssl_pkey_new([
+        'curve_name' => 'prime256v1', 'private_key_type' => OPENSSL_KEYTYPE_EC, 'config' => $cnf,
+    ]);
+    cek($kunci !== false, 'kunci EC dibuat dengan cnf proyek');
+}
+
 function test_enkripsi_sesuai_rfc8291()
 {
     $v = _rfc8291();

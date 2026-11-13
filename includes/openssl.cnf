@@ -1,0 +1,13 @@
+# Konfigurasi OpenSSL minimal untuk includes/webpush.php.
+# Dipakai bila PHP tidak menemukan openssl.cnf sendiri (sering terjadi di
+# Apache/XAMPP Windows). Tidak berisi rahasia apa pun.
+openssl_conf = default_conf
+
+[ default_conf ]
+
+[ req ]
+# PHP 7.3 memeriksa panjang kunci walau untuk kunci EC
+default_bits = 2048
+distinguished_name = req_dn
+
+[ req_dn ]

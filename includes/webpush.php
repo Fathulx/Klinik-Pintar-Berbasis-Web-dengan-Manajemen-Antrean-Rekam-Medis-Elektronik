@@ -39,17 +39,29 @@ function webpush_pem_privat($d32, $titik65)
     return "-----BEGIN EC PRIVATE KEY-----\n" . chunk_split(base64_encode($der), 64, "\n") . "-----END EC PRIVATE KEY-----\n";
 }
 
+// openssl.cnf milik proyek, untuk server yang tidak menemukan miliknya sendiri
+function webpush_openssl_cnf()
+{
+    return __DIR__ . DIRECTORY_SEPARATOR . 'openssl.cnf';
+}
+
 function _webpush_kunci_baru()
 {
     $opsi = ['curve_name' => 'prime256v1', 'private_key_type' => OPENSSL_KEYTYPE_EC];
     $kunci = @openssl_pkey_new($opsi);
     if (!$kunci) {
-        // OpenSSL di Windows/XAMPP kadang butuh lokasi openssl.cnf
-        $cnf = dirname(PHP_BINARY) . DIRECTORY_SEPARATOR . 'extras' . DIRECTORY_SEPARATOR . 'ssl' . DIRECTORY_SEPARATOR . 'openssl.cnf';
-        $kunci = openssl_pkey_new($opsi + ['config' => $cnf]);
+        // Apache/XAMPP Windows sering tidak menemukan openssl.cnf
+        $kunci = @openssl_pkey_new($opsi + ['config' => webpush_openssl_cnf()]);
     }
     if (!$kunci) {
-        throw new RuntimeException('Gagal membuat kunci EC: ' . openssl_error_string());
+        $pesan = '';
+        while (($e = openssl_error_string()) !== false) {
+            $pesan .= ' ' . $e;
+        }
+        throw new RuntimeException('Gagal membuat kunci EC:' . $pesan);
+    }
+    while (openssl_error_string() !== false) {
+        // buang sisa galat dari percobaan pertama
     }
     $d = openssl_pkey_get_details($kunci)['ec'];
     $pad = function ($b) { return str_pad($b, 32, "\0", STR_PAD_LEFT); };
