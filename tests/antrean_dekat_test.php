@@ -42,9 +42,42 @@ function test_menjadi_dekat_setelah_selesai()
     $d = buat_reservasi_uji($pdo, '2026-11-12', '09:00', array_fill(0, 6, 'menunggu'));
     proses_notif_antrean_dekat($pdo, '2026-11-12', '09:00');
     $pdo->prepare("UPDATE reservasi SET status = 'selesai' WHERE id = ?")->execute([$d['reservasi'][1]['id']]);
-    sama(1, proses_notif_antrean_dekat($pdo, '2026-11-12', '09:30'), 'notifikasi baru');
+    // nomor 2-4 turun satu angka (dapat lagi), nomor 5 baru masuk batas
+    sama(4, proses_notif_antrean_dekat($pdo, '2026-11-12', '09:30'), 'notifikasi baru');
     sama(1, _jumlah_notif_user($pdo, $d['reservasi'][5]['user_id']), 'nomor 5 sekarang dapat');
     sama(0, _jumlah_notif_user($pdo, $d['reservasi'][6]['user_id']), 'nomor 6 masih belum');
+}
+
+function test_notif_lagi_setiap_angka_turun()
+{
+    $pdo = test_pdo();
+    $d = buat_reservasi_uji($pdo, '2026-11-12', '09:00', array_fill(0, 6, 'menunggu'));
+    proses_notif_antrean_dekat($pdo, '2026-11-12', '09:00');
+    $no4 = $d['reservasi'][4]['user_id'];
+    sama(1, _jumlah_notif_user($pdo, $no4), 'nomor 4: notifikasi pertama (3 di depan)');
+
+    $pdo->prepare("UPDATE reservasi SET status = 'selesai' WHERE id = ?")->execute([$d['reservasi'][1]['id']]);
+    proses_notif_antrean_dekat($pdo, '2026-11-12', '09:10');
+    sama(2, _jumlah_notif_user($pdo, $no4), 'nomor 4: notifikasi kedua (2 di depan)');
+
+    $st = $pdo->prepare('SELECT pesan FROM notifikasi WHERE user_id = ? ORDER BY id DESC LIMIT 1');
+    $st->execute([$no4]);
+    cek(strpos($st->fetchColumn(), 'tinggal 2 pasien lagi') !== false, 'pesan terbaru memuat angka baru');
+}
+
+function test_angka_melompat_hanya_kirim_angka_terbaru()
+{
+    $pdo = test_pdo();
+    $d = buat_reservasi_uji($pdo, '2026-11-12', '09:00', array_fill(0, 6, 'menunggu'));
+    proses_notif_antrean_dekat($pdo, '2026-11-12', '09:00');
+    $pdo->exec("UPDATE reservasi SET status = 'tidak_hadir' WHERE no_antrean IN (1, 2)");
+    proses_notif_antrean_dekat($pdo, '2026-11-12', '09:10');
+
+    $no4 = $d['reservasi'][4]['user_id'];
+    sama(2, _jumlah_notif_user($pdo, $no4), 'nomor 4: 3 lalu langsung 1');
+    $st = $pdo->prepare('SELECT pesan FROM notifikasi WHERE user_id = ? ORDER BY id DESC LIMIT 1');
+    $st->execute([$no4]);
+    cek(strpos($st->fetchColumn(), 'tinggal 1 pasien lagi') !== false, 'pesan memuat 1');
 }
 
 function test_batal_tidak_dihitung()

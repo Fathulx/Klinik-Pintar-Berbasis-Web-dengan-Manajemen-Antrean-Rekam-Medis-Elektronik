@@ -60,8 +60,14 @@ function test_db_baru()
     $pdo->exec('USE ' . TEST_DB_NAME);
     jalankan_file_sql($pdo, __DIR__ . '/../database/schema.sql');
     // migrasi dijalankan dua kali untuk membuktikan aman diulang
-    jalankan_file_sql($pdo, __DIR__ . '/../database/migrations/2026-11-12_notifikasi_reset.sql');
-    jalankan_file_sql($pdo, __DIR__ . '/../database/migrations/2026-11-12_notifikasi_reset.sql');
+    // semua migrasi diterapkan dua kali: harus aman diimpor ulang
+    $migrasi = glob(__DIR__ . '/../database/migrations/*.sql');
+    sort($migrasi);
+    foreach ([1, 2] as $_) {
+        foreach ($migrasi as $f) {
+            jalankan_file_sql($pdo, $f);
+        }
+    }
     return $pdo;
 }
 

@@ -81,6 +81,7 @@ CREATE TABLE IF NOT EXISTS reservasi (
     status ENUM('menunggu', 'hadir', 'diperiksa', 'selesai', 'batal', 'tidak_hadir')
         NOT NULL DEFAULT 'menunggu',
     notif_dekat_at DATETIME DEFAULT NULL,
+    notif_di_depan SMALLINT UNSIGNED DEFAULT NULL,
     PRIMARY KEY (id),
     UNIQUE KEY uq_reservasi_nomor (jadwal_id, tanggal, no_antrean),
     KEY idx_reservasi_pasien_tanggal_status (pasien_id, tanggal, status),

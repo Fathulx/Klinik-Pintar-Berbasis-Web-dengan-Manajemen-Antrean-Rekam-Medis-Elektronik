@@ -62,15 +62,16 @@ function tandai_notif_dibaca(PDO $pdo, $userId, $id = null)
 
 // Membuat notifikasi "giliran sudah dekat" untuk reservasi pada $tanggal
 // yang jumlah pasien aktif di depannya <= NOTIF_ANTREAN_SISA. Hanya berlaku
-// mulai NOTIF_MENIT_SEBELUM_PRAKTIK menit sebelum jam mulai praktik, dan
-// paling banyak sekali per reservasi. $jamSekarang berformat 'H:i'.
-// Mengembalikan jumlah notifikasi yang dibuat.
+// mulai NOTIF_MENIT_SEBELUM_PRAKTIK menit sebelum jam mulai praktik.
+// Dikirim lagi setiap kali angka itu turun (mis. 3, 2, 1, berikutnya);
+// angka yang sama tidak pernah dikirim dua kali (kolom notif_di_depan).
+// $jamSekarang berformat 'H:i'. Mengembalikan jumlah notifikasi yang dibuat.
 function proses_notif_antrean_dekat(PDO $pdo, $tanggal, $jamSekarang, $pasienId = null)
 {
     list($jam, $menit) = array_map('intval', explode(':', $jamSekarang));
     $batasDetik = ($jam * 60 + $menit + NOTIF_MENIT_SEBELUM_PRAKTIK) * 60;
 
-    $sql = "SELECT r.id, r.no_antrean, ps.user_id, p.nama_poli,
+    $sql = "SELECT r.id, r.notif_di_depan, r.no_antrean, ps.user_id, p.nama_poli,
                    (SELECT COUNT(*) FROM reservasi r2
                      WHERE r2.jadwal_id = r.jadwal_id AND r2.tanggal = r.tanggal
                        AND r2.no_antrean < r.no_antrean
@@ -81,26 +82,30 @@ function proses_notif_antrean_dekat(PDO $pdo, $tanggal, $jamSekarang, $pasienId 
             JOIN poli p ON p.id = d.poli_id
             JOIN pasien ps ON ps.id = r.pasien_id
             WHERE r.tanggal = ? AND r.status IN ('menunggu', 'hadir')
-              AND r.notif_dekat_at IS NULL
               AND TIME_TO_SEC(j.jam_mulai) <= ?";
     $param = [$tanggal, $batasDetik];
     if ($pasienId !== null) {
         $sql .= ' AND r.pasien_id = ?';
         $param[] = (int) $pasienId;
     }
-    $sql .= ' HAVING di_depan <= ?';
+    $sql .= ' HAVING di_depan <= ? AND (r.notif_di_depan IS NULL OR di_depan < r.notif_di_depan)';
     $param[] = (int) NOTIF_ANTREAN_SISA;
 
     $st = $pdo->prepare($sql);
     $st->execute($param);
     $calon = $st->fetchAll();
 
-    $klaim = $pdo->prepare('UPDATE reservasi SET notif_dekat_at = NOW() WHERE id = ? AND notif_dekat_at IS NULL');
+    // klaim atomik: hanya satu permintaan yang berhasil menurunkan angka ini
+    $klaim = $pdo->prepare(
+        'UPDATE reservasi
+         SET notif_di_depan = ?, notif_dekat_at = COALESCE(notif_dekat_at, NOW())
+         WHERE id = ? AND (notif_di_depan IS NULL OR notif_di_depan > ?)'
+    );
     $dibuat = 0;
     foreach ($calon as $r) {
         $pdo->beginTransaction();
         try {
-            $klaim->execute([$r['id']]);
+            $klaim->execute([(int) $r['di_depan'], $r['id'], (int) $r['di_depan']]);
             if ($klaim->rowCount() !== 1) {
                 $pdo->rollBack(); // sudah diklaim permintaan lain
                 continue;
