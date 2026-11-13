@@ -94,8 +94,11 @@ sedang ditutup. Pengiriman ditulis tanpa pustaka luar (`includes/webpush.php`).
 Syarat browser:
 - Alamat harus **https://** (atau `http://localhost`). Membuka lewat IP WiFi
   (`http://192.168.x.x`) tidak bisa. Untuk mencoba di HP sebelum deploy, pakai
-  terowongan HTTPS, misalnya `cloudflared tunnel --url http://localhost:80`,
-  lalu buka `https://<alamat-acak>.trycloudflare.com/klinik` di HP.
+  terowongan HTTPS, misalnya
+  `cloudflared tunnel --protocol http2 --url http://127.0.0.1:80`
+  (`--protocol http2` diperlukan bila jaringan memblokir UDP/QUIC), lalu buka
+  `https://<alamat-acak>.trycloudflare.com/klinik` di HP. Laptop harus tetap
+  menyala selama percobaan.
 - **Android/laptop**: Chrome, Edge, atau Firefox langsung bisa.
 - **iPhone/iPad**: iOS 16.4+, dan situs harus dipasang dulu lewat
   Bagikan → **Tambahkan ke Layar Utama**, lalu dibuka dari ikon tersebut.
