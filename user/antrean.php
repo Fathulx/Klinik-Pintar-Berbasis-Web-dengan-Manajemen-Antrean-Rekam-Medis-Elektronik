@@ -35,10 +35,12 @@ require __DIR__ . '/../includes/panel_start.php';
 
 <?php if (in_array(date('Y-m-d'), array_column($aktifList, 'tanggal'), true)): ?>
   <div class="mt-4 rounded-xl border border-klinik bg-klinik/10 px-4 py-3 text-sm text-klinik">
-    Biarkan halaman ini terbuka. Anda akan diberi tahu saat antrean tinggal
-    <?= (int) NOTIF_ANTREAN_SISA ?> pasien lagi.
+    Anda akan diberi tahu saat antrean tinggal <?= (int) NOTIF_ANTREAN_SISA ?> pasien lagi,
+    lalu setiap kali antrean maju. Aktifkan notifikasi di perangkat agar tetap menerimanya
+    walau halaman ini ditutup.
   </div>
 <?php endif; ?>
+<?php require __DIR__ . '/../includes/push_panel.php'; ?>
 
 <?php if ($aktifList): ?>
   <div class="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">

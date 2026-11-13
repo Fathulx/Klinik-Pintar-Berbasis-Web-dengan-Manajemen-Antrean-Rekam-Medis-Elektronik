@@ -10,6 +10,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <meta name="description" content="Sistem informasi klinik: reservasi, antrean, dan rekam medis elektronik (demo tugas kuliah).">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230F5C55'/%3E%3Cpath d='M13 7h6v6h6v6h-6v6h-6v-6H7v-6h6z' fill='%23F6F4EE'/%3E%3C/svg%3E">
+  <link rel="manifest" href="<?= e(url('manifest.webmanifest')) ?>">
+  <link rel="apple-touch-icon" href="<?= e(url('assets/ikon-192.png')) ?>">
+  <meta name="theme-color" content="#0F5C55">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Klinik Pintar">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {

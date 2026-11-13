@@ -42,6 +42,7 @@ require __DIR__ . '/../includes/panel_start.php';
     </form>
   <?php endif; ?>
 </div>
+<?php require __DIR__ . '/../includes/push_panel.php'; ?>
 
 <div class="mt-6 divide-y divide-garis border border-garis bg-white">
   <?php foreach ($daftar as $n): $baruIni = $n['dibaca_at'] === null; ?>

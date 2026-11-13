@@ -31,6 +31,13 @@ if (!defined('SMTP_PASS'))      { define('SMTP_PASS', ''); }
 if (!defined('SMTP_FROM'))      { define('SMTP_FROM', ''); }
 if (!defined('SMTP_FROM_NAME')) { define('SMTP_FROM_NAME', 'Klinik Pintar'); }
 
+// Web Push (notifikasi ke HP walau browser ditutup). Buat kunci dengan:
+//   php tools/buat_kunci_webpush.php
+// lalu salin hasilnya ke config.local.php. Kosong = Web Push nonaktif.
+if (!defined('WEBPUSH_PUBLIC_KEY'))  { define('WEBPUSH_PUBLIC_KEY', ''); }
+if (!defined('WEBPUSH_PRIVATE_KEY')) { define('WEBPUSH_PRIVATE_KEY', ''); }
+if (!defined('WEBPUSH_SUBJECT'))     { define('WEBPUSH_SUBJECT', ''); } // mis. 'mailto:email@klinik'
+
 date_default_timezone_set('Asia/Jakarta');
 error_reporting(E_ALL);
 ini_set('display_errors', APP_ENV === 'production' ? '0' : '1');

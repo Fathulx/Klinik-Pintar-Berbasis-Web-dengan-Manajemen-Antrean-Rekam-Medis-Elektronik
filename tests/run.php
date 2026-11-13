@@ -34,17 +34,21 @@ foreach (glob(__DIR__ . '/*_test.php') as $file) {
 // test JavaScript (butuh Node.js; dilewati bila tidak tersedia)
 if ($filter === '' || strpos('js', $filter) !== false) {
     exec('node --version 2>&1', $abaikan, $adaNode);
-    if ($adaNode === 0) {
+    foreach (glob(__DIR__ . '/js/*_test.js') as $fileJs) {
+        $namaJs = 'js/' . basename($fileJs);
+        if ($adaNode !== 0) {
+            echo "LEWATI $namaJs (Node.js tidak ditemukan)\n";
+            continue;
+        }
         $total++;
-        exec('node ' . escapeshellarg(__DIR__ . '/js/notifikasi_test.js') . ' 2>&1', $keluaranJs, $kodeJs);
+        $keluaranJs = [];
+        exec('node ' . escapeshellarg($fileJs) . ' 2>&1', $keluaranJs, $kodeJs);
         if ($kodeJs === 0) {
-            echo "OK     js/notifikasi_test.js\n";
+            echo "OK     $namaJs\n";
         } else {
             $gagal++;
-            echo "GAGAL  js/notifikasi_test.js\n       " . implode("\n       ", $keluaranJs) . "\n";
+            echo "GAGAL  $namaJs\n       " . implode("\n       ", $keluaranJs) . "\n";
         }
-    } else {
-        echo "LEWATI js/notifikasi_test.js (Node.js tidak ditemukan)\n";
     }
 }
 

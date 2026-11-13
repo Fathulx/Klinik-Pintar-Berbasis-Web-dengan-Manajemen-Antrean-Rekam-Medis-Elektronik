@@ -1,5 +1,14 @@
 Options -Indexes
 
+AddType application/manifest+json .webmanifest
+
+# service worker selalu diambil versi terbaru
+<IfModule mod_headers.c>
+  <Files "sw.js">
+    Header set Cache-Control "no-cache"
+  </Files>
+</IfModule>
+
 <FilesMatch "\.(sql|md|log|bak|ini|sh)$">
   Require all denied
 </FilesMatch>

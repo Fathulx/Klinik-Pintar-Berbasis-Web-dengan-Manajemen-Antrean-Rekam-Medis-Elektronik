@@ -3,6 +3,7 @@
 // menyaring berdasarkan user_id agar pengguna hanya menyentuh miliknya sendiri.
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/antrean.php';
+require_once __DIR__ . '/webpush.php';
 
 function buat_notifikasi(PDO $pdo, $userId, $judul, $pesan, $tautan = null)
 {
@@ -118,6 +119,8 @@ function proses_notif_antrean_dekat(PDO $pdo, $tanggal, $jamSekarang, $pasienId 
             buat_notifikasi($pdo, $r['user_id'], 'Giliran Anda sudah dekat', $pesan, 'user/antrean.php');
             $pdo->commit();
             $dibuat++;
+            // di luar transaksi: jaringan lambat tidak boleh menahan kunci baris
+            kirim_push_ke_user($pdo, $r['user_id'], 'Giliran Anda sudah dekat', $pesan, 'user/antrean.php');
         } catch (PDOException $ex) {
             $pdo->rollBack();
             throw $ex;

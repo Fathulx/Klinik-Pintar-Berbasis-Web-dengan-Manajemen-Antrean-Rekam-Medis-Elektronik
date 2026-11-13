@@ -60,17 +60,47 @@ perlu tabel tambahan. Instalasi baru dari `schema.sql` sudah mencakupnya.
 1. **Backup dulu**: di phpMyAdmin pilih database `klinik_pintar` → tab
    **Export** → **Go**, lalu simpan file `.sql`-nya di tempat aman (jangan
    di-commit).
-2. Masih di database yang sama, buka tab **Import** dan impor
-   [`database/migrations/2026-11-12_notifikasi_reset.sql`](./database/migrations/2026-11-12_notifikasi_reset.sql).
-   File ini hanya menambah tabel `notifikasi`, `password_resets`, dan kolom
-   `reservasi.notif_dekat_at`; data lama tidak diubah. Aman diimpor ulang.
+2. Masih di database yang sama, buka tab **Import** dan impor file di
+   [`database/migrations/`](./database/migrations/) **berurutan sesuai nama**:
+   - `2026-11-12_notifikasi_reset.sql`: tabel `notifikasi`, `password_resets`,
+     kolom `reservasi.notif_dekat_at`
+   - `2026-11-13_notif_tiap_turun.sql`: kolom `reservasi.notif_di_depan`
+   - `2026-11-13_web_push.sql`: tabel `push_langganan`
+
+   Semua hanya menambah tabel/kolom; data lama tidak diubah. Aman diimpor ulang.
 3. Di server **MySQL** (bukan MariaDB), jalankan baris `ALTER TABLE` di file
    itu tanpa `IF NOT EXISTS`, sekali saja.
 
 Notifikasi "giliran sudah dekat" muncul di aplikasi pasien saat pasien aktif
-di depannya tinggal `NOTIF_ANTREAN_SISA` (bawaan 3), mulai
-`NOTIF_MENIT_SEBELUM_PRAKTIK` (bawaan 60) menit sebelum jam praktik. Kedua
-nilai bisa diubah di `config.local.php`.
+di depannya tinggal `NOTIF_ANTREAN_SISA` (bawaan 3), lalu lagi setiap kali
+angka itu turun. Berlaku mulai `NOTIF_MENIT_SEBELUM_PRAKTIK` (bawaan 60) menit
+sebelum jam praktik. Kedua nilai bisa diubah di `config.local.php`.
+
+Untuk mencoba tanpa membuat akun manual:
+`php tools/antrean_uji.php isi <email-pasien> 5` (hapus lagi dengan
+`php tools/antrean_uji.php hapus`).
+
+## Notifikasi di HP (Web Push)
+
+Pasien dapat menerima notifikasi antrean di HP/laptop walau browser atau layar
+sedang ditutup. Pengiriman ditulis tanpa pustaka luar (`includes/webpush.php`).
+
+1. Buat kunci sekali per server:
+   `php tools/buat_kunci_webpush.php --simpan` (menulis `WEBPUSH_*` ke
+   `config.local.php`; jangan di-commit). Tanpa kunci, fitur ini nonaktif.
+2. Pasien membuka **Antrean** atau **Notifikasi**, lalu menekan
+   **Aktifkan notifikasi**.
+
+Syarat browser:
+- Alamat harus **https://** (atau `http://localhost`). Membuka lewat IP WiFi
+  (`http://192.168.x.x`) tidak bisa. Untuk mencoba di HP sebelum deploy, pakai
+  terowongan HTTPS, misalnya `cloudflared tunnel --url http://localhost:80`,
+  lalu buka `https://<alamat-acak>.trycloudflare.com/klinik` di HP.
+- **Android/laptop**: Chrome, Edge, atau Firefox langsung bisa.
+- **iPhone/iPad**: iOS 16.4+, dan situs harus dipasang dulu lewat
+  Bagikan → **Tambahkan ke Layar Utama**, lalu dibuka dari ikon tersebut.
+
+Mengganti kunci membuat semua perangkat harus mengaktifkan notifikasi lagi.
 
 ## Email (reset password pasien)
 
