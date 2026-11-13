@@ -143,27 +143,276 @@ td[data-label="Aksi"] > span {
   display: none;
 }
 
-button[class*="bg-klinik"],
-a[class*="bg-klinik"] {
-  border-radius: 0.85rem;
-  box-shadow: 0 5px 14px rgb(15 92 85 / 14%);
-  text-decoration: none;
-}
+/* ---------- Sistem tombol ----------
+   Utama  : bg-klinik (hijau klinik) — aksi utama halaman
+   Bahaya : bg-bata — aksi yang menghapus/mereset
+   Sekunder: tombol tanpa bg-* dan .action-button — garis tipis
+   Semua tombol: terangkat sedikit saat disorot (perangkat ber-mouse),
+   tertekan saat diklik, cincin fokus jelas untuk keyboard, dan
+   pemutar kecil ketika formulir sedang dikirim (lihat assets/tombol.js). */
 
-button[class*="bg-klinik"]:hover:not(:disabled),
-a[class*="bg-klinik"]:hover {
-  box-shadow: 0 8px 18px rgb(15 92 85 / 20%);
-}
-
-button[class*="bg-bata"],
+button,
+.action-button,
+a[class*="bg-klinik"],
 a[class*="bg-bata"] {
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 180ms ease,
+    transform 120ms ease;
+}
+
+/* tautan yang berperan sebagai tombol: ukuran sama dengan <button> */
+a[class*="bg-klinik"]:not([class*="bg-klinik/"]),
+a[class*="bg-bata"]:not([class*="bg-bata/"]) {
+  display: inline-flex;
+  min-height: 2.35rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  line-height: 1.25;
+}
+
+/* utama */
+button[class*="bg-klinik"]:not([class*="bg-klinik/"]),
+a[class*="bg-klinik"]:not([class*="bg-klinik/"]) {
+  --warna-putar: #fff;
   border-radius: 0.85rem;
+  background-color: #0F5C55;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 14%),
+    0 1px 2px rgb(20 33 31 / 14%),
+    0 4px 12px rgb(15 92 85 / 16%);
+  color: #fff;
   text-decoration: none;
 }
 
-button[class*="bg-bata"]:hover:not(:disabled) {
-  background-color: #A63C1E;
+button[class*="bg-klinik"]:not([class*="bg-klinik/"]):hover:not(:disabled),
+a[class*="bg-klinik"]:not([class*="bg-klinik/"]):hover {
+  background-color: #0B4A44;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 14%),
+    0 2px 4px rgb(20 33 31 / 14%),
+    0 8px 20px rgb(15 92 85 / 24%);
   color: #fff;
+}
+
+button[class*="bg-klinik"]:not([class*="bg-klinik/"]):active:not(:disabled),
+a[class*="bg-klinik"]:not([class*="bg-klinik/"]):active {
+  background-color: #093F3A;
+  box-shadow: inset 0 2px 5px rgb(0 0 0 / 22%);
+  transform: translateY(0) scale(0.98);
+}
+
+/* bahaya */
+button[class*="bg-bata"]:not([class*="bg-bata/"]),
+a[class*="bg-bata"]:not([class*="bg-bata/"]) {
+  --warna-putar: #fff;
+  border-radius: 0.85rem;
+  background-color: #C94E24;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 16%),
+    0 1px 2px rgb(20 33 31 / 14%),
+    0 4px 12px rgb(201 78 36 / 18%);
+  color: #fff;
+  text-decoration: none;
+}
+
+button[class*="bg-bata"]:not([class*="bg-bata/"]):hover:not(:disabled),
+a[class*="bg-bata"]:not([class*="bg-bata/"]):hover {
+  background-color: #A63C1E;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 16%),
+    0 2px 4px rgb(20 33 31 / 14%),
+    0 8px 20px rgb(201 78 36 / 26%);
+  color: #fff;
+}
+
+button[class*="bg-bata"]:not([class*="bg-bata/"]):active:not(:disabled),
+a[class*="bg-bata"]:not([class*="bg-bata/"]):active {
+  background-color: #8E3318;
+  box-shadow: inset 0 2px 5px rgb(0 0 0 / 22%);
+  transform: translateY(0) scale(0.98);
+}
+
+/* sekunder: tertekan saat diklik */
+button:not([class*="bg-"]):active:not(:disabled),
+.action-button:active {
+  background-color: #E3EFEC;
+  box-shadow: inset 0 1px 3px rgb(20 33 31 / 12%);
+  transform: scale(0.98);
+}
+
+.action-danger:active,
+button[class~="text-bata"]:active:not(:disabled) {
+  background-color: rgb(217 88 43 / 14%);
+}
+
+/* terangkat hanya di perangkat yang benar-benar bisa "menyorot",
+   supaya di HP tombol tidak tertahan dalam posisi terangkat */
+@media (hover: hover) {
+  button[class*="bg-klinik"]:not([class*="bg-klinik/"]):hover:not(:disabled):not(:active),
+  a[class*="bg-klinik"]:not([class*="bg-klinik/"]):hover:not(:active),
+  button[class*="bg-bata"]:not([class*="bg-bata/"]):hover:not(:disabled):not(:active),
+  a[class*="bg-bata"]:not([class*="bg-bata/"]):hover:not(:active) {
+    transform: translateY(-1px);
+  }
+}
+
+/* cincin fokus keyboard */
+button:focus-visible,
+.action-button:focus-visible,
+a[class*="bg-klinik"]:focus-visible,
+a[class*="bg-bata"]:focus-visible {
+  outline: 2px solid #0F5C55;
+  outline-offset: 2px;
+}
+
+button[class*="bg-bata"]:focus-visible,
+a[class*="bg-bata"]:focus-visible,
+.action-danger:focus-visible,
+button[class~="text-bata"]:focus-visible {
+  outline-color: #D9582B;
+}
+
+/* sedang mengirim: pemutar kecil di depan teks, klik ganda diabaikan */
+button[aria-busy="true"],
+.action-button[aria-busy="true"] {
+  cursor: progress;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+button[aria-busy="true"]::before,
+.action-button[aria-busy="true"]::before {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  flex: 0 0 auto;
+  margin-right: 0.5em;
+  border: 2px solid var(--warna-putar, #0F5C55);
+  border-right-color: transparent;
+  border-radius: 9999px;
+  vertical-align: -0.12em;
+  animation: tombol-putar 0.7s linear infinite;
+  content: "";
+}
+
+button[class*="text-bata"][aria-busy="true"]::before,
+.action-danger[aria-busy="true"]::before {
+  border-color: #B84625;
+  border-right-color: transparent;
+}
+
+@keyframes tombol-putar {
+  to { transform: rotate(360deg); }
+}
+
+/* navigasi publik: Masuk (tenang) dan Daftar (utama) sebagai satu pasangan */
+.public-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.public-nav a {
+  display: inline-flex;
+  min-height: 2.35rem;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 0.85rem;
+  padding: 0 1rem;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 180ms ease,
+    transform 120ms ease;
+}
+
+.public-nav__masuk {
+  color: #0F5C55;
+}
+
+.public-nav__masuk:hover {
+  border-color: rgb(15 92 85 / 22%);
+  background-color: #F1F7F5;
+}
+
+.public-nav__masuk:active {
+  background-color: #E3EFEC;
+  transform: scale(0.98);
+}
+
+.public-nav__masuk[aria-current="page"] {
+  border-color: #D9D5C9;
+  background-color: #fff;
+}
+
+.public-nav__daftar {
+  background-color: #0F5C55;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 14%),
+    0 1px 2px rgb(20 33 31 / 14%),
+    0 4px 12px rgb(15 92 85 / 16%);
+  color: #fff;
+}
+
+.public-nav__daftar:hover {
+  background-color: #0B4A44;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 14%),
+    0 2px 4px rgb(20 33 31 / 14%),
+    0 8px 20px rgb(15 92 85 / 24%);
+}
+
+.public-nav__daftar:active {
+  background-color: #093F3A;
+  box-shadow: inset 0 2px 5px rgb(0 0 0 / 22%);
+  transform: scale(0.98);
+}
+
+@media (hover: hover) {
+  .public-nav__daftar:hover:not(:active) {
+    transform: translateY(-1px);
+  }
+}
+
+.public-nav a:focus-visible {
+  outline: 2px solid #0F5C55;
+  outline-offset: 2px;
+}
+
+/* baris di daftar notifikasi: tombol selebar baris, bukan kotak */
+button.notif-item:not(:disabled) {
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  color: inherit;
+}
+
+button.notif-item:hover:not(:disabled) {
+  border: 0;
+  background-color: #F6F4EE;
+  color: inherit;
+}
+
+button.notif-item:active:not(:disabled) {
+  background-color: #EFECE3;
+  box-shadow: none;
+  transform: none;
+}
+
+button.notif-item:focus-visible {
+  outline-offset: -3px;
 }
 
 input:not([type="hidden"]),

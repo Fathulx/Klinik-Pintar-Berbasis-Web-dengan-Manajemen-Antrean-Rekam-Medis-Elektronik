@@ -4,5 +4,6 @@
       Jangan memasukkan data pribadi atau data kesehatan yang asli.
     </p>
   </footer>
+  <script src="<?= e(url('assets/tombol.js?v=' . filemtime(__DIR__ . '/../assets/tombol.js'))) ?>" defer></script>
 </body>
 </html>

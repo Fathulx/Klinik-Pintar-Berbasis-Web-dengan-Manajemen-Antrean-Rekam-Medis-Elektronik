@@ -49,7 +49,7 @@ require __DIR__ . '/../includes/panel_start.php';
       <?= csrf_field() ?>
       <input type="hidden" name="aksi" value="baca">
       <input type="hidden" name="id" value="<?= (int) $n['id'] ?>">
-      <button class="block w-full px-4 py-3 text-left hover:bg-paper">
+      <button class="notif-item block w-full px-4 py-3 text-left">
         <span class="flex items-baseline justify-between gap-3">
           <span class="text-sm <?= $baruIni ? 'font-semibold text-klinik' : 'font-medium' ?>"><?= e($n['judul']) ?></span>
           <span class="whitespace-nowrap font-mono text-[11px] text-ink/60"><?= e(substr($n['created_at'], 0, 16)) ?></span>
