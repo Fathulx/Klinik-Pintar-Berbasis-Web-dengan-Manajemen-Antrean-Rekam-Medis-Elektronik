@@ -80,6 +80,20 @@ Untuk mencoba tanpa membuat akun manual:
 `php tools/antrean_uji.php isi <email-pasien> 5` (hapus lagi dengan
 `php tools/antrean_uji.php hapus`).
 
+## Data demo untuk presentasi
+
+Agar dashboard, grafik, laporan, dan riwayat tidak kosong:
+
+```powershell
+D:\XAMPP\php\php.exe tools\data_demo.php isi     # 20 pasien contoh + riwayat 4 minggu + 7 hari ke depan
+D:\XAMPP\php\php.exe tools\data_demo.php hapus   # hapus semua data demo
+```
+
+Data memakai jadwal praktik yang sudah ada. Pasien contoh memakai email
+`@contoh.klinik` (password `Demo@12345`); isinya fiktif. Antrean hari ini
+hanya terisi bila hari itu ada jadwal aktif, jadi jalankan `isi` pada hari
+presentasi. Menjalankan `isi` lagi mengganti data demo lama, bukan menambah.
+
 ## Notifikasi di HP (Web Push)
 
 Pasien dapat menerima notifikasi antrean di HP/laptop walau browser atau layar
