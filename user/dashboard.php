@@ -8,6 +8,19 @@ tandai_tidak_hadir_otomatis($pdo);
 $pasienId = pasien_id_dari_user($pdo, $user['id']);
 $berikut  = $pasienId ? reservasi_pasien($pdo, $pasienId, true) : [];
 
+// Tanpa antrean aktif, karcis hari ini (bila ada) tetap ditampilkan dengan
+// statusnya, supaya pasien tahu ia baru selesai diperiksa atau ditandai
+// tidak hadir, bukan tiba-tiba hanya melihat ajakan reservasi.
+$hariIniTerakhir = null;
+if ($pasienId && !$berikut) {
+    foreach (reservasi_pasien($pdo, $pasienId, false) as $r) {
+        if ($r['tanggal'] === date('Y-m-d')) {
+            $hariIniTerakhir = $r;
+            break;
+        }
+    }
+}
+
 // tiga kunjungan selesai terakhir, untuk membuka rekam medis dengan cepat
 $terakhir = [];
 if ($pasienId) {
@@ -35,7 +48,7 @@ require __DIR__ . '/../includes/panel_start.php';
 <div class="mt-8 grid gap-10 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)]">
   <section aria-labelledby="judul-antrean">
     <h2 id="judul-antrean" class="font-serif text-2xl font-bold">
-      <?= $berikut ? 'Kunjungan berikutnya' : 'Belum ada antrean' ?>
+      <?= $berikut ? 'Kunjungan berikutnya' : ($hariIniTerakhir ? 'Antrean hari ini' : 'Belum ada antrean') ?>
     </h2>
     <?php if ($berikut): ?>
       <div class="mt-4"><?= karcis_html($berikut[0]) ?></div>
@@ -46,6 +59,9 @@ require __DIR__ . '/../includes/panel_start.php';
       <?php if (count($berikut) > 1): ?>
         <p class="mt-3 text-sm text-ink/70">Anda punya <?= count($berikut) - 1 ?> reservasi lain yang akan datang.</p>
       <?php endif; ?>
+    <?php elseif ($hariIniTerakhir): ?>
+      <div class="mt-4"><?= karcis_html($hariIniTerakhir) ?></div>
+      <a class="mt-5 inline-flex bg-klinik px-5 py-3 font-bold text-white" href="<?= e(url('user/reservasi.php')) ?>">Buat reservasi baru</a>
     <?php else: ?>
       <p class="mt-3 max-w-md text-ink/75">
         Pilih poli, dokter, dan tanggal. Nomor antrean langsung terbit dan Anda diberi tahu
