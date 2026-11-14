@@ -188,7 +188,7 @@ require __DIR__ . '/../includes/panel_start.php';
     </p>
     <p class="mt-1 text-xs text-ink/60">
       <?= $r['jenis_kelamin'] ? ($r['jenis_kelamin'] === 'L' ? 'Laki-laki' : 'Perempuan') : '' ?>
-      <?= $r['tanggal_lahir'] ? ' &middot; Lahir ' . e($r['tanggal_lahir']) : '' ?>
+      <?= $r['tanggal_lahir'] ? ' &middot; ' . usia_tahun($r['tanggal_lahir'], $r['tanggal']) . ' tahun (lahir ' . e(date('d/m/Y', strtotime($r['tanggal_lahir']))) . ')' : '' ?>
       <?= $r['no_hp'] ? ' &middot; ' . e($r['no_hp']) : '' ?>
     </p>
   </div>
@@ -220,13 +220,17 @@ require __DIR__ . '/../includes/panel_start.php';
 
   <div>
     <p class="text-sm font-medium">Resep <span class="text-ink/50">(maksimal <?= $JUMLAH_RESEP ?> obat)</span></p>
-    <div class="mt-2 space-y-2">
-      <?php foreach ($resepForm as $i => $o): ?>
-        <div class="grid gap-2 sm:grid-cols-3">
-          <input name="obat[<?= $i ?>][nama]" value="<?= e($o['nama']) ?>" placeholder="Nama obat" class="<?= $kelasBaris ?>">
-          <input name="obat[<?= $i ?>][dosis]" value="<?= e($o['dosis']) ?>" placeholder="Dosis" class="<?= $kelasBaris ?>">
-          <input name="obat[<?= $i ?>][aturan]" value="<?= e($o['aturan']) ?>" placeholder="Aturan pakai" class="<?= $kelasBaris ?>">
-        </div>
+    <div class="mt-2 space-y-4 sm:space-y-2">
+      <?php foreach ($resepForm as $i => $o): $ke = $i + 1; ?>
+        <fieldset class="border-l-2 border-garis pl-3 sm:border-0 sm:pl-0">
+          <!-- di HP tiap obat diberi judul agar dosis tidak tertukar baris -->
+          <legend class="mb-1 text-xs font-medium text-ink/60 sm:sr-only">Obat <?= $ke ?></legend>
+          <div class="grid gap-2 sm:grid-cols-3">
+            <input name="obat[<?= $i ?>][nama]" value="<?= e($o['nama']) ?>" placeholder="Nama obat" aria-label="Nama obat <?= $ke ?>" class="<?= $kelasBaris ?>">
+            <input name="obat[<?= $i ?>][dosis]" value="<?= e($o['dosis']) ?>" placeholder="Dosis" aria-label="Dosis obat <?= $ke ?>" class="<?= $kelasBaris ?>">
+            <input name="obat[<?= $i ?>][aturan]" value="<?= e($o['aturan']) ?>" placeholder="Aturan pakai" aria-label="Aturan pakai obat <?= $ke ?>" class="<?= $kelasBaris ?>">
+          </div>
+        </fieldset>
       <?php endforeach; ?>
     </div>
     <?= pesan_field($err, 'resep') ?>

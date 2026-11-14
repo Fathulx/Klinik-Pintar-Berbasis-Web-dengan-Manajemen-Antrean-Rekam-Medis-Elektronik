@@ -50,6 +50,18 @@ function tampil_flash()
         . '<span class="flex-1">' . e($f['pesan']) . '</span></div>';
 }
 
+function label_peran($role)
+{
+    $label = ['user' => 'Pasien', 'admin' => 'Admin', 'dokter' => 'Dokter', 'super_admin' => 'Super Admin'];
+    return isset($label[$role]) ? $label[$role] : $role;
+}
+
+// usia dalam tahun penuh pada $padaTanggal (Y-m-d)
+function usia_tahun($tanggalLahir, $padaTanggal)
+{
+    return (int) date_diff(date_create($tanggalLahir), date_create($padaTanggal))->y;
+}
+
 function pesan_field($err, $kunci)
 {
     return isset($err[$kunci])

@@ -128,7 +128,7 @@ require __DIR__ . '/../includes/panel_start.php';
           <td data-label="Waktu" class="whitespace-nowrap px-3 py-2 font-mono text-xs"><?= e($b['created_at']) ?></td>
           <td data-label="Pengguna" class="px-3 py-2">
             <?= e($b['nama'] !== null ? $b['nama'] : '-') ?>
-            <?php if ($b['role']): ?><span class="block text-xs text-ink/60"><?= e(str_replace('_', ' ', $b['role'])) ?></span><?php endif; ?>
+            <?php if ($b['role']): ?><span class="block text-xs text-ink/60"><?= e(label_peran($b['role'])) ?></span><?php endif; ?>
           </td>
           <td data-label="Aksi" class="px-3 py-2 font-mono text-xs <?= in_array($b['aksi'], $rawan, true) ? 'font-semibold text-bata' : '' ?>"><?= e($b['aksi']) ?></td>
           <td data-label="Detail" class="px-3 py-2 text-ink/70"><?= e($b['detail']) ?></td>
