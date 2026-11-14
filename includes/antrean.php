@@ -54,11 +54,14 @@ function pasien_id_dari_user($pdo, $userId)
     return $id ? (int) $id : 0;
 }
 
-function reservasi_pasien($pdo, $pasienId, $aktifSaja)
+// Aktif = status masih berjalan DAN tanggal hari ini atau nanti. Reservasi
+// yang tanggalnya sudah lewat masuk riwayat apa pun statusnya.
+function reservasi_pasien($pdo, $pasienId, $aktifSaja, $hariIni = null)
 {
+    $hariIni = $hariIni === null ? date('Y-m-d') : $hariIni;
     $filter = $aktifSaja
-        ? "r.status IN ('menunggu', 'hadir', 'diperiksa')"
-        : "r.status IN ('selesai', 'batal', 'tidak_hadir')";
+        ? "r.status IN ('menunggu', 'hadir', 'diperiksa') AND r.tanggal >= ?"
+        : "(r.status IN ('selesai', 'batal', 'tidak_hadir') OR r.tanggal < ?)";
     $urut = $aktifSaja ? 'ASC' : 'DESC';
     $st = $pdo->prepare(
         "SELECT r.id, r.tanggal, r.no_antrean, r.status, j.hari,
@@ -76,7 +79,7 @@ function reservasi_pasien($pdo, $pasienId, $aktifSaja)
          WHERE r.pasien_id = ? AND $filter
          ORDER BY r.tanggal $urut, r.id LIMIT 50"
     );
-    $st->execute([$pasienId]);
+    $st->execute([$pasienId, $hariIni]);
     return $st->fetchAll();
 }
 
