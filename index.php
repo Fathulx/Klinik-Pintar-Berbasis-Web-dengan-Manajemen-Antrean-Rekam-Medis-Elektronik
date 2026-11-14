@@ -44,11 +44,14 @@ foreach ($st->fetchAll() as $b) {
     ];
 }
 
-// praktik hari ini
+// Layar antrean hari ini: per jadwal, nomor yang sedang diperiksa atau
+// (bila belum ada) nomor berikutnya yang menunggu giliran.
 $st = $pdo->prepare(
     "SELECT ud.nama, p.nama_poli, SUBSTR(j.jam_mulai, 1, 5) AS jam_mulai, SUBSTR(j.jam_selesai, 1, 5) AS jam_selesai,
             j.kuota,
-            (SELECT COUNT(*) FROM reservasi r WHERE r.jadwal_id = j.id AND r.tanggal = ? AND r.status <> 'batal') AS terisi
+            (SELECT COUNT(*) FROM reservasi r WHERE r.jadwal_id = j.id AND r.tanggal = ? AND r.status <> 'batal') AS terisi,
+            (SELECT MIN(r.no_antrean) FROM reservasi r WHERE r.jadwal_id = j.id AND r.tanggal = ? AND r.status = 'diperiksa') AS dilayani,
+            (SELECT MIN(r.no_antrean) FROM reservasi r WHERE r.jadwal_id = j.id AND r.tanggal = ? AND r.status IN ('hadir', 'menunggu')) AS berikutnya
      FROM jadwal_dokter j
      JOIN dokter d ON d.id = j.dokter_id
      JOIN users ud ON ud.id = d.user_id AND ud.status = 'aktif'
@@ -56,223 +59,129 @@ $st = $pdo->prepare(
      WHERE j.aktif = 1 AND j.hari = ?
      ORDER BY j.jam_mulai, ud.nama"
 );
-$st->execute([$hariIni, hari_dari_tanggal($hariIni)]);
+$st->execute([$hariIni, $hariIni, $hariIni, hari_dari_tanggal($hariIni)]);
 $praktik = $st->fetchAll();
 
+// hari praktik terdekat berikutnya, untuk layar kosong
+$hariBerikut = null;
+if (!$praktik) {
+    $adaHari = array_unique(array_merge([], ...array_values($hariDokter ?: [[]])));
+    for ($i = 1; $i <= 7 && $hariBerikut === null; $i++) {
+        $tgl = date('Y-m-d', strtotime("+$i day"));
+        if (in_array(hari_dari_tanggal($tgl), $adaHari, true)) {
+            $hariBerikut = tanggal_indonesia($tgl);
+        }
+    }
+}
+
 $langkah = [
-    ['Daftar akun', 'Buat akun pasien dengan email Anda. Prosesnya kurang dari satu menit.'],
-    ['Pilih jadwal', 'Pilih poli, dokter, lalu tanggal. Nomor antrean langsung terbit beserta perkiraan jam dilayani.'],
-    ['Datang dan konfirmasi', 'Tunjukkan nomor antrean ke petugas. Kehadiran Anda dikonfirmasi di sistem.'],
-    ['Diperiksa', 'Setelah diperiksa, hasil dan resep tersimpan di riwayat kunjungan Anda.'],
+    ['Daftar akun', 'Buat akun pasien dengan email Anda.'],
+    ['Pilih jadwal', 'Pilih poli, dokter, dan tanggal. Nomor antrean langsung terbit.'],
+    ['Tunggu di rumah', 'Anda diberi tahu lewat HP saat tinggal 3 pasien lagi.'],
+    ['Datang dan diperiksa', 'Tunjukkan nomor ke petugas. Hasil dan resep tersimpan di riwayat.'],
 ];
-$peran = [
-    'Super Admin' => 'Mengelola akun admin, data poli, dan memantau log aktivitas.',
-    'Admin'       => 'Mengelola dokter, jadwal praktik, antrean harian, dan laporan.',
-    'Dokter'      => 'Memanggil pasien, mengisi rekam medis dan resep.',
-    'Pasien'      => 'Reservasi antrean dan melihat riwayat kunjungan sendiri.',
-];
+$singkat = ['Senin' => 'Sen', 'Selasa' => 'Sel', 'Rabu' => 'Rab', 'Kamis' => 'Kam', 'Jumat' => 'Jum', 'Sabtu' => 'Sab', 'Minggu' => 'Min'];
 
 $judul = 'Klinik Pintar';
 require __DIR__ . '/includes/header.php';
 require __DIR__ . '/includes/public_nav.php';
 ?>
-<style>
-  body.home-fade {
-    animation: home-fade-in 420ms ease-out both;
-  }
-
-  body.home-fade.is-leaving {
-    animation: home-fade-out 220ms ease-in forwards;
-  }
-
-  body.home-section-animations .home-section-reveal {
-    transition: opacity 600ms ease, transform 600ms ease;
-  }
-
-  body.home-section-animations .home-section-reveal:not(.is-visible) {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-
-  @keyframes home-fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @keyframes home-fade-out {
-    from { opacity: 1; }
-    to { opacity: 0; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    body.home-fade {
-      animation: none;
-    }
-
-    body.home-section-animations .home-section-reveal {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
-  }
-</style>
-<script>
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    document.body.classList.add('home-section-animations');
-  }
-</script>
 <main class="flex-1">
-  <section class="home-section-reveal mx-auto grid max-w-5xl gap-10 px-4 py-14 md:grid-cols-5">
-    <div class="md:col-span-3">
-      <p class="font-mono text-xs uppercase tracking-widest text-ink/60">Sistem informasi klinik</p>
-      <h1 class="mt-3 font-serif text-4xl font-bold leading-tight text-klinik md:text-5xl">
-        Pesan antrean dari rumah, datang saat giliran Anda dekat.
+  <section class="mx-auto grid max-w-5xl gap-10 px-4 py-12 md:grid-cols-[1.05fr_1fr] md:items-center md:py-16">
+    <div>
+      <h1 class="font-serif text-[2.6rem] font-bold leading-[1.05] text-ink md:text-[3.4rem]">
+        Ambil nomor antrean dari rumah. Datang saat giliran Anda dekat.
       </h1>
-      <p class="mt-5 max-w-lg text-ink/80">
-        Pilih poli, dokter, dan tanggal kunjungan. Nomor antrean terbit saat itu juga,
-        lengkap dengan perkiraan jam Anda dilayani, dan hasil pemeriksaan tersimpan di riwayat Anda.
+      <p class="mt-5 max-w-md text-lg text-ink/80">
+        Pilih poli dan dokter, nomor antrean langsung terbit. Anda diberi tahu
+        lewat HP saat tinggal 3 pasien lagi, jadi tidak perlu menunggu lama di klinik.
       </p>
       <div class="mt-7 flex flex-wrap items-center gap-4">
-        <a class="bg-klinik px-5 py-2.5 text-sm font-medium text-white hover:bg-ink" href="<?= e(url('auth/register.php')) ?>">Buat akun pasien</a>
-        <a class="text-sm underline" href="<?= e(url('auth/login.php')) ?>">Sudah punya akun? Masuk</a>
+        <a class="bg-klinik px-5 py-3 text-base font-bold text-white" href="<?= e(url('auth/register.php')) ?>">Buat akun pasien</a>
+        <a class="text-base font-bold text-klinik underline" href="<?= e(url('auth/login.php')) ?>">Sudah punya akun? Masuk</a>
       </div>
     </div>
 
-    <aside class="md:col-span-2">
-      <div class="rounded-2xl border border-klinik/15 bg-white p-5 shadow-sm">
-        <p class="font-mono text-[11px] uppercase tracking-widest text-ink/60">Praktik hari ini</p>
-        <p class="font-serif text-lg font-bold"><?= e(tanggal_indonesia($hariIni)) ?></p>
-        <hr class="my-3 border-garis">
-        <?php foreach ($praktik as $p): ?>
-          <div class="flex items-baseline justify-between gap-3 border-b border-garis/70 py-2 text-sm last:border-b-0">
-            <span>
-              <?= e($p['nama']) ?>
-              <span class="block text-xs text-ink/60">Poli <?= e($p['nama_poli']) ?> &middot; <span class="font-mono"><?= e($p['jam_mulai']) ?>-<?= e($p['jam_selesai']) ?></span></span>
-            </span>
-            <span class="whitespace-nowrap font-mono text-xs"><?= (int) $p['terisi'] ?>/<?= (int) $p['kuota'] ?></span>
-          </div>
-        <?php endforeach; ?>
-        <?php if (!$praktik): ?>
-          <p class="text-sm text-ink/70">Tidak ada jadwal praktik hari ini.</p>
-        <?php else: ?>
-          <p class="mt-2 border-t border-garis pt-2 text-xs text-ink/60">Angka di kanan: antrean terisi dari kuota.</p>
-        <?php endif; ?>
+    <aside class="layar-antrean" aria-label="Antrean hari ini">
+      <div class="layar-antrean__kepala">
+        <strong>Sedang dilayani</strong>
+        <span class="layar-antrean__jam"><?= e(tanggal_indonesia($hariIni)) ?>, <span id="jam-layar"><?= date('H.i') ?></span></span>
       </div>
+      <?php foreach ($praktik as $p): ?>
+        <div class="layar-antrean__baris">
+          <div>
+            <span class="poli-tanda <?= kelas_poli($p['nama_poli']) ?>">Poli <?= e($p['nama_poli']) ?></span>
+            <span class="layar-antrean__dokter"><?= e($p['nama']) ?>, <?= e($p['jam_mulai']) ?>-<?= e($p['jam_selesai']) ?></span>
+          </div>
+          <?php if ($p['dilayani']): ?>
+            <span class="layar-antrean__nomor"><?= e(kode_antrean($p['nama_poli'], $p['dilayani'])) ?></span>
+          <?php elseif ($p['berikutnya']): ?>
+            <span class="layar-antrean__nomor layar-antrean__nomor--kosong">Berikutnya <?= e(kode_antrean($p['nama_poli'], $p['berikutnya'])) ?></span>
+          <?php else: ?>
+            <span class="layar-antrean__nomor layar-antrean__nomor--kosong"><?= (int) $p['terisi'] ?>/<?= (int) $p['kuota'] ?> terisi</span>
+          <?php endif; ?>
+        </div>
+      <?php endforeach; ?>
+      <?php if (!$praktik): ?>
+        <p class="layar-antrean__kosong">
+          Hari ini tidak ada praktik.<?= $hariBerikut ? ' Praktik berikutnya ' . e($hariBerikut) . '.' : '' ?>
+        </p>
+      <?php endif; ?>
     </aside>
   </section>
 
-  <section class="home-section-reveal border-t border-garis">
+  <section class="border-t border-garis bg-white">
     <div class="mx-auto max-w-5xl px-4 py-12">
-      <h2 class="font-serif text-2xl font-bold">Poli dan dokter</h2>
-      <div class="mt-6 border-t border-garis">
-        <?php foreach ($poli as $p): ?>
-          <div class="grid gap-4 border-b border-garis py-5 md:grid-cols-3">
-            <div class="rounded-xl border border-garis bg-white px-4 py-3">
-              <h3 class="font-serif text-xl font-bold text-klinik">Poli <?= e($p['nama']) ?></h3>
-              <p class="mt-1 text-sm text-ink/70"><?= e($p['deskripsi']) ?></p>
+      <h2 class="font-serif text-3xl font-bold">Jadwal praktik</h2>
+      <p class="mt-1 text-ink/70">Hari yang diberi warna adalah hari dokter praktik.</p>
+      <div class="papan-jadwal mt-6">
+        <?php foreach ($poli as $p): foreach ($p['dokter'] as $d): ?>
+          <div class="papan-jadwal__baris">
+            <div>
+              <span class="poli-tanda <?= kelas_poli($p['nama']) ?>">Poli <?= e($p['nama']) ?></span>
+              <p class="mt-0.5 text-lg font-bold"><?= e($d['nama']) ?></p>
+              <p class="text-sm text-ink/70"><?= e($d['bio']) ?></p>
             </div>
-            <div class="space-y-3 md:col-span-2">
-              <?php foreach ($p['dokter'] as $d): ?>
-                <div>
-                  <p class="font-medium"><?= e($d['nama']) ?></p>
-                  <p class="text-sm text-ink/70"><?= e($d['bio']) ?></p>
-                  <p class="mt-0.5 font-mono text-xs text-klinik"><?= e(implode(', ', $d['hari'])) ?></p>
-                </div>
+            <ol class="papan-jadwal__hari <?= kelas_poli($p['nama']) ?>" aria-label="Hari praktik">
+              <?php foreach ($urutan as $h): $ada = in_array($h, $d['hari'], true); ?>
+                <li class="<?= $ada ? 'is-praktik' : '' ?>" title="<?= e($h) ?><?= $ada ? ': praktik' : ': libur' ?>">
+                  <?= e($singkat[$h]) ?><span class="sr-only"><?= $ada ? ' praktik' : ' libur' ?></span>
+                </li>
               <?php endforeach; ?>
-            </div>
+            </ol>
           </div>
-        <?php endforeach; ?>
+        <?php endforeach; endforeach; ?>
         <?php if (!$poli): ?>
-          <p class="py-5 text-sm text-ink/60">Jadwal praktik belum tersedia.</p>
+          <p class="py-5 text-ink/60">Jadwal praktik belum tersedia.</p>
         <?php endif; ?>
       </div>
     </div>
   </section>
 
-  <section class="home-section-reveal border-t border-garis bg-white">
+  <section class="border-t border-garis">
     <div class="mx-auto max-w-5xl px-4 py-12">
-      <h2 class="font-serif text-2xl font-bold">Cara kerja</h2>
-      <ol class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <h2 class="font-serif text-3xl font-bold">Cara berobat</h2>
+      <ol class="alur-berobat mt-6">
         <?php foreach ($langkah as $i => $l): ?>
-          <li class="rounded-xl border border-garis bg-paper p-4">
-            <p class="font-mono text-lg font-semibold text-bata"><?= str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT) ?></p>
-            <p class="mt-1 font-medium"><?= e($l[0]) ?></p>
-            <p class="mt-1 text-sm text-ink/70"><?= e($l[1]) ?></p>
+          <li>
+            <span class="alur-berobat__no"><?= $i + 1 ?></span>
+            <p class="font-bold"><?= e($l[0]) ?></p>
+            <p class="mt-1 text-ink/75"><?= e($l[1]) ?></p>
           </li>
         <?php endforeach; ?>
       </ol>
     </div>
   </section>
-
-  <section class="home-section-reveal border-t border-garis">
-    <div class="mx-auto max-w-5xl px-4 py-12">
-      <h2 class="font-serif text-2xl font-bold">Empat peran, akses terpisah</h2>
-      <p class="mt-1 text-sm text-ink/70">Setiap peran hanya melihat data yang menjadi tugasnya.</p>
-      <dl class="mt-6 grid gap-3 sm:grid-cols-2 md:grid-cols-4">
-        <?php foreach ($peran as $nama => $uraian): ?>
-          <div class="rounded-xl border border-garis bg-white p-4">
-            <dt class="font-mono text-[11px] uppercase tracking-widest text-klinik"><?= e($nama) ?></dt>
-            <dd class="mt-1 text-sm"><?= e($uraian) ?></dd>
-          </div>
-        <?php endforeach; ?>
-      </dl>
-    </div>
-  </section>
 </main>
 <script>
-  (() => {
-    const sections = document.querySelectorAll('.home-section-reveal');
-    const showSection = (section) => section.classList.add('is-visible');
-
-    if (!('IntersectionObserver' in window)) {
-      sections.forEach(showSection);
-      return;
-    }
-
-    const observer = new IntersectionObserver((entries, currentObserver) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          showSection(entry.target);
-          currentObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.01, rootMargin: '0px 0px -8% 0px' });
-
-    sections.forEach((section) => observer.observe(section));
-  })();
-
-  (() => {
-    const body = document.body;
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let sedangMeninggalkan = false;
-
-    if (reduceMotion) return;
-
-    body.classList.add('home-fade');
-    document.addEventListener('click', (event) => {
-      const tautan = event.target.closest('a');
-      if (!tautan || event.defaultPrevented || event.button !== 0
-        || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey
-        || tautan.hasAttribute('download')
-        || (tautan.target && tautan.target !== '_self')) {
-        return;
-      }
-
-      const tujuan = new URL(tautan.href, window.location.href);
-      if (tujuan.origin !== window.location.origin
-        || (tujuan.pathname === window.location.pathname
-          && tujuan.search === window.location.search
-          && tujuan.hash)) {
-        return;
-      }
-
-      event.preventDefault();
-      if (sedangMeninggalkan) return;
-
-      sedangMeninggalkan = true;
-      body.classList.add('is-leaving');
-      window.setTimeout(() => window.location.assign(tujuan.href), 220);
-    });
+  // jam di layar antrean ikut berjalan
+  (function () {
+    var el = document.getElementById('jam-layar');
+    if (!el) return;
+    setInterval(function () {
+      var d = new Date();
+      el.textContent = ('0' + d.getHours()).slice(-2) + '.' + ('0' + d.getMinutes()).slice(-2);
+    }, 15000);
   })();
 </script>
 <?php require __DIR__ . '/includes/footer.php'; ?>

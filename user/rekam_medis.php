@@ -52,7 +52,7 @@ require __DIR__ . '/../includes/panel_start.php';
 <a class="action-button" href="<?= e(url('user/riwayat.php')) ?>">Kembali ke riwayat</a>
 
 <div class="mt-4 border border-garis bg-white p-5">
-  <p class="font-mono text-[11px] uppercase tracking-widest text-ink/60">Kunjungan</p>
+  <p class="text-[13px] font-bold text-ink/60">Kunjungan</p>
   <p class="font-serif text-2xl font-bold"><?= e(tanggal_indonesia($r['tanggal'])) ?></p>
   <p class="text-sm text-ink/70"><?= e($r['dokter']) ?> &middot; Poli <?= e($r['nama_poli']) ?> &middot;
     <span class="font-mono"><?= e(kode_antrean($r['nama_poli'], $r['no_antrean'])) ?></span></p>
@@ -61,15 +61,15 @@ require __DIR__ . '/../includes/panel_start.php';
 <div class="mt-6 space-y-6">
   <?php foreach ($bagian as $judulBagian => $isi): ?>
     <div>
-      <p class="font-mono text-[11px] uppercase tracking-widest text-ink/60"><?= e($judulBagian) ?></p>
+      <p class="text-[13px] font-bold text-ink/60"><?= e($judulBagian) ?></p>
       <p class="mt-1 whitespace-pre-line border border-garis bg-white px-3 py-2 text-sm"><?= e($isi !== null && $isi !== '' ? $isi : '-') ?></p>
     </div>
   <?php endforeach; ?>
 
   <div>
-    <p class="font-mono text-[11px] uppercase tracking-widest text-ink/60">Resep</p>
+    <p class="text-[13px] font-bold text-ink/60">Resep</p>
     <table class="responsive-table mt-1 w-full border border-garis bg-white text-left text-sm">
-      <thead class="bg-paper font-mono text-[11px] uppercase tracking-widest text-ink/60">
+      <thead class="bg-paper text-[13px] font-bold text-ink/60">
         <tr><th class="px-3 py-2">Obat</th><th class="px-3 py-2">Dosis</th><th class="px-3 py-2">Aturan pakai</th></tr>
       </thead>
       <tbody>

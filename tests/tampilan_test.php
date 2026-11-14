@@ -9,6 +9,14 @@ function test_label_peran_berbahasa_indonesia()
     sama('lainnya', label_peran('lainnya'), 'tidak dikenal apa adanya');
 }
 
+function test_teks_sisa_antrean()
+{
+    require_once __DIR__ . '/../includes/antrean.php';
+    sama('Anda pasien berikutnya', teks_sisa_antrean(0), 'nol');
+    sama('1 pasien lagi sebelum Anda', teks_sisa_antrean(1), 'satu');
+    sama('12 pasien lagi sebelum Anda', teks_sisa_antrean(12), 'banyak');
+}
+
 function test_usia_dihitung_pada_tanggal_kunjungan()
 {
     sama(32, usia_tahun('1994-03-12', '2026-11-14'), 'sudah lewat ulang tahun');

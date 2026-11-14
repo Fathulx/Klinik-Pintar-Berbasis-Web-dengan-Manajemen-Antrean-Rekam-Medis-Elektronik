@@ -8,8 +8,8 @@ $aktif = isset($aktif) ? $aktif : '';
   <aside class="border-b border-garis bg-white md:w-60 md:shrink-0 md:border-b-0 md:border-r print:hidden">
     <div class="panel-brand-row px-5 py-5">
       <div>
-        <p class="font-serif text-xl font-bold text-klinik">Klinik Pintar</p>
-        <p class="mt-0.5 font-mono text-[11px] uppercase tracking-widest text-ink/60"><?= e(label_peran($user['role'])) ?></p>
+        <a href="<?= e(url(dashboard_path($user['role']))) ?>" class="merek"><span class="merek__tanda" aria-hidden="true"></span>Klinik Pintar</a>
+        <p class="mt-0.5 pl-[2.3rem] text-[13px] font-bold text-ink/60"><?= e(label_peran($user['role'])) ?></p>
       </div>
       <details class="panel-mobile-menu panel-mobile-menu--overlay panel-mobile-menu--hamburger">
         <summary class="panel-mobile-menu__toggle" aria-label="Buka menu" aria-expanded="false">
@@ -20,7 +20,7 @@ $aktif = isset($aktif) ? $aktif : '';
           <nav class="flex gap-1 overflow-x-auto px-3 pb-3 md:block md:space-y-1 md:px-3 md:pb-5">
             <?php foreach ($menu as $m): $on = ($m[1] === $aktif); ?>
               <a href="<?= e(url($m[1])) ?>"
-                 class="whitespace-nowrap rounded-xl border-b-2 px-3 py-2 text-sm md:block md:border-b-0 md:border-l-2 <?= $on ? 'border-bata bg-paper font-medium text-klinik' : 'border-transparent hover:bg-paper' ?>">
+                 class="whitespace-nowrap rounded-lg border-b-2 px-3 py-2 md:block md:border-b-0 md:border-l-2 <?= $on ? 'border-klinik bg-paper font-bold text-klinik' : 'border-transparent hover:bg-paper' ?>">
                 <?= e($m[0]) ?>
               </a>
             <?php endforeach; ?>
@@ -115,7 +115,7 @@ $aktif = isset($aktif) ? $aktif : '';
       <nav class="space-y-1 px-3 pb-5">
         <?php foreach ($menu as $m): $on = ($m[1] === $aktif); ?>
           <a href="<?= e(url($m[1])) ?>"
-             class="block whitespace-nowrap rounded-xl border-l-2 px-3 py-2 text-sm <?= $on ? 'border-bata bg-paper font-medium text-klinik' : 'border-transparent hover:bg-paper' ?>">
+             class="block whitespace-nowrap rounded-lg border-l-[3px] px-3 py-2.5 <?= $on ? 'border-klinik bg-paper font-bold text-klinik' : 'border-transparent hover:bg-paper' ?>">
             <?= e($m[0]) ?>
           </a>
         <?php endforeach; ?>

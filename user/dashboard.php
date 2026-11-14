@@ -8,68 +8,72 @@ tandai_tidak_hadir_otomatis($pdo);
 $pasienId = pasien_id_dari_user($pdo, $user['id']);
 $berikut  = $pasienId ? reservasi_pasien($pdo, $pasienId, true) : [];
 
+// tiga kunjungan selesai terakhir, untuk membuka rekam medis dengan cepat
+$terakhir = [];
+if ($pasienId) {
+    $st = $pdo->prepare(
+        "SELECT r.id, r.tanggal, u.nama AS dokter, p.nama_poli
+         FROM reservasi r
+         JOIN jadwal_dokter j ON j.id = r.jadwal_id
+         JOIN dokter d ON d.id = j.dokter_id
+         JOIN users u ON u.id = d.user_id
+         JOIN poli p ON p.id = d.poli_id
+         WHERE r.pasien_id = ? AND r.status = 'selesai'
+         ORDER BY r.tanggal DESC, r.id DESC LIMIT 3"
+    );
+    $st->execute([$pasienId]);
+    $terakhir = $st->fetchAll();
+}
+
 $judul = 'Dashboard Pasien';
 $aktif = 'user/dashboard.php';
 require __DIR__ . '/../includes/panel_start.php';
 ?>
-<div class="space-y-6">
-  <section class="overflow-hidden rounded-2xl border border-klinik/20 bg-gradient-to-br from-klinik/10 via-white to-bata/10 p-6 shadow-sm">
-    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div>
-        <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60">Dashboard pasien</p>
-        <h1 class="mt-2 font-serif text-4xl font-bold text-klinik">Selamat datang, <?= e($user['nama']) ?></h1>
-        <p class="mt-2 max-w-xl text-sm text-ink/70">
-          Semoga hari Anda tetap sehat dan lancar. Berikut status antrean serta langkah cepat untuk booking kunjungan.
-        </p>
+<h1 class="font-serif text-4xl font-bold text-ink">Halo, <?= e($user['nama']) ?></h1>
+<p class="mt-1 text-ink/70"><?= e(tanggal_indonesia(date('Y-m-d'))) ?></p>
+
+<div class="mt-8 grid gap-10 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)]">
+  <section aria-labelledby="judul-antrean">
+    <h2 id="judul-antrean" class="font-serif text-2xl font-bold">
+      <?= $berikut ? 'Kunjungan berikutnya' : 'Belum ada antrean' ?>
+    </h2>
+    <?php if ($berikut): ?>
+      <div class="mt-4"><?= karcis_html($berikut[0]) ?></div>
+      <div class="mt-5 flex flex-wrap gap-3">
+        <a class="bg-klinik px-4 py-2.5 font-bold text-white" href="<?= e(url('user/antrean.php')) ?>">Lihat antrean saya</a>
+        <a class="action-button" href="<?= e(url('user/reservasi.php')) ?>">Pesan kunjungan lain</a>
       </div>
-      <div class="inline-flex items-center self-start rounded-full border border-klinik/20 bg-white px-3 py-2 text-xs font-medium text-klinik shadow-sm md:self-auto">
-        <?= $berikut ? 'Antrean aktif' : 'Siap reservasi' ?>
-      </div>
-    </div>
+      <?php if (count($berikut) > 1): ?>
+        <p class="mt-3 text-sm text-ink/70">Anda punya <?= count($berikut) - 1 ?> reservasi lain yang akan datang.</p>
+      <?php endif; ?>
+    <?php else: ?>
+      <p class="mt-3 max-w-md text-ink/75">
+        Pilih poli, dokter, dan tanggal. Nomor antrean langsung terbit dan Anda diberi tahu
+        saat giliran sudah dekat.
+      </p>
+      <a class="mt-5 inline-flex bg-klinik px-5 py-3 font-bold text-white" href="<?= e(url('user/reservasi.php')) ?>">Buat reservasi</a>
+    <?php endif; ?>
   </section>
 
-  <div class="grid gap-4 md:grid-cols-[1.3fr_0.7fr]">
-    <section class="rounded-2xl border border-garis bg-white p-5 shadow-sm">
-      <?php if ($berikut): ?>
-        <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60">Kunjungan berikutnya</p>
-        <div class="mt-4"><?= karcis_html($berikut[0]) ?></div>
-        <div class="mt-4 flex flex-wrap gap-3">
-          <a class="inline-flex items-center bg-klinik px-4 py-2 text-sm font-medium text-white transition hover:bg-ink"
-             href="<?= e(url('user/antrean.php')) ?>">Lihat semua antrean</a>
-          <a class="inline-flex items-center gap-2 rounded-xl border border-klinik/20 bg-klinik/5 px-4 py-2.5 text-sm font-semibold text-klinik shadow-sm hover:border-klinik/40 hover:bg-klinik/10"
-             href="<?= e(url('user/reservasi.php')) ?>">
-            Buat reservasi baru
-            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
-        </div>
-      <?php else: ?>
-        <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60">Status antrean</p>
-        <p class="mt-4 text-base font-medium text-ink">Anda belum punya antrean aktif.</p>
-        <p class="mt-2 text-sm text-ink/70">Reservasi sekarang untuk mendapatkan jadwal konsultasi yang sesuai dengan kebutuhan Anda.</p>
-        <a class="mt-5 inline-flex items-center bg-klinik px-4 py-2 text-sm font-medium text-white transition hover:bg-ink"
-           href="<?= e(url('user/reservasi.php')) ?>">Buat reservasi</a>
-      <?php endif; ?>
-    </section>
-
-    <aside class="rounded-2xl border border-garis bg-paper p-5 shadow-sm">
-      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60">Aksi cepat</p>
-      <div class="mt-4 space-y-3">
-        <a href="<?= e(url('user/reservasi.php')) ?>"
-           class="block rounded-xl border border-garis bg-white px-3 py-3 text-sm font-medium text-ink transition hover:border-klinik hover:text-klinik">
-          Reservasi kunjungan
-        </a>
-        <a href="<?= e(url('user/antrean.php')) ?>"
-           class="block rounded-xl border border-garis bg-white px-3 py-3 text-sm font-medium text-ink transition hover:border-klinik hover:text-klinik">
-          Riwayat antrean
-        </a>
-        <a href="<?= e(url('auth/ganti_password.php')) ?>"
-           class="block rounded-xl border border-garis bg-white px-3 py-3 text-sm font-medium text-ink transition hover:border-klinik hover:text-klinik">
-          Ubah password
-        </a>
-      </div>
-    </aside>
-  </div>
+  <section aria-labelledby="judul-riwayat">
+    <h2 id="judul-riwayat" class="font-serif text-2xl font-bold">Kunjungan terakhir</h2>
+    <?php if ($terakhir): ?>
+      <ul class="mt-4 divide-y divide-garis border-y border-garis">
+        <?php foreach ($terakhir as $k): ?>
+          <li class="flex flex-wrap items-center justify-between gap-3 py-3.5">
+            <div>
+              <span class="poli-tanda <?= kelas_poli($k['nama_poli']) ?>">Poli <?= e($k['nama_poli']) ?></span>
+              <p class="mt-0.5 font-bold"><?= e($k['dokter']) ?></p>
+              <p class="text-sm text-ink/70"><?= e(tanggal_indonesia($k['tanggal'])) ?></p>
+            </div>
+            <a class="action-button" href="<?= e(url('user/rekam_medis.php?id=' . (int) $k['id'])) ?>">Rekam medis</a>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+      <a class="mt-3 inline-block font-bold text-klinik underline" href="<?= e(url('user/riwayat.php')) ?>">Semua riwayat kunjungan</a>
+    <?php else: ?>
+      <p class="mt-3 text-ink/70">Hasil pemeriksaan dan resep akan muncul di sini setelah kunjungan pertama Anda.</p>
+    <?php endif; ?>
+  </section>
 </div>
 <?php require __DIR__ . '/../includes/panel_end.php'; ?>

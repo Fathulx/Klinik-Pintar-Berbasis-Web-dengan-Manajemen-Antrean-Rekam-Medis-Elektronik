@@ -73,7 +73,7 @@ $judul = 'Daftar Pasien';
 require __DIR__ . '/../includes/header.php';
 ?>
 <main class="mx-auto w-full max-w-md flex-1 px-4 py-12">
-  <p class="font-mono text-xs uppercase tracking-widest text-ink/60">Pendaftaran pasien</p>
+  <p class="text-[13px] font-bold text-ink/60">Pendaftaran pasien</p>
   <h1 class="mt-2 font-serif text-3xl font-bold text-klinik">Buat akun pasien</h1>
   <div class="mt-6 border border-garis bg-white p-6">
     <?php if (isset($err['umum'])): ?>

@@ -7,12 +7,12 @@
   <title><?= e($judul ?? 'Klinik Pintar') ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
   <meta name="description" content="Sistem informasi klinik: reservasi, antrean, dan rekam medis elektronik (demo tugas kuliah).">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230F5C55'/%3E%3Cpath d='M13 7h6v6h6v6h-6v6h-6v-6H7v-6h6z' fill='%23F6F4EE'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231B4F82'/%3E%3Cpath d='M13 7h6v6h6v6h-6v6h-6v-6H7v-6h6z' fill='%23FFFFFF'/%3E%3C/svg%3E">
   <link rel="manifest" href="<?= e(url('manifest.webmanifest')) ?>">
   <link rel="apple-touch-icon" href="<?= e(url('assets/ikon-192.png')) ?>">
-  <meta name="theme-color" content="#0F5C55">
+  <meta name="theme-color" content="#1B4F82">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Klinik Pintar">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -20,14 +20,21 @@
     tailwind.config = {
       theme: {
         extend: {
+          // Palet "ruang tunggu klinik": dinding abu kebiruan, biru papan
+          // petunjuk, kuning layar panggilan, dan satu warna per poli.
           colors: {
-            paper: '#F6F4EE', ink: '#14211F', klinik: '#0F5C55',
-            bata: '#D9582B', garis: '#D9D5C9'
+            paper: '#EEF3F4', ink: '#12293B', klinik: '#1B4F82',
+            bata: '#C8321F', garis: '#D5DEE2', panggil: '#F2B705',
+            layar: '#0E2233',
+            poli: { umum: '#1B6FB8', gigi: '#0E8C83', anak: '#E07A1F', dalam: '#7A4EB0' }
           },
+          // "serif" dan "mono" dipetakan ulang agar halaman lama ikut berganti:
+          // judul dan angka memakai huruf papan petunjuk, teks memakai huruf
+          // yang dirancang mudah dibaca.
           fontFamily: {
-            serif: ['Fraunces', 'serif'],
-            sans: ['"IBM Plex Sans"', 'sans-serif'],
-            mono: ['"IBM Plex Mono"', 'monospace']
+            serif: ['"Barlow Semi Condensed"', 'sans-serif'],
+            sans: ['"Atkinson Hyperlegible"', 'sans-serif'],
+            mono: ['"Barlow Semi Condensed"', 'sans-serif']
           }
         }
       }

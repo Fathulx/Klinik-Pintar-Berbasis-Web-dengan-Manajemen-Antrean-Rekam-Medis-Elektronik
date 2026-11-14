@@ -94,83 +94,57 @@ $judul = 'Masuk';
 require __DIR__ . '/../includes/header.php';
 require __DIR__ . '/../includes/public_nav.php';
 ?>
-<main class="mx-auto w-full max-w-6xl flex-1 px-6 py-16 md:py-20">
-  <div class="grid items-center gap-12 md:grid-cols-2 md:gap-20">
+<main class="mx-auto grid w-full max-w-5xl flex-1 gap-12 px-4 py-12 md:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] md:items-start md:gap-16 md:py-16">
+  <section>
+    <h1 class="font-serif text-4xl font-bold text-ink">Masuk</h1>
+    <p class="mt-2 text-ink/75">Untuk pasien, dokter, dan petugas klinik.</p>
 
-    <section class="order-2 md:order-1">
-      <p class="font-mono text-xs uppercase tracking-widest text-ink/60">Akses pengguna</p>
-      <h1 class="mt-4 font-serif text-4xl font-bold leading-tight text-klinik">
-        Masuk untuk melihat antrean dan riwayat kunjungan Anda.
-      </h1>
-      <p class="mt-5 max-w-md text-sm leading-relaxed text-ink/80">
-        Pasien mendaftar sendiri. Akun dokter dan admin dibuat oleh pengelola klinik.
-      </p>
+    <div class="mt-6"><?= tampil_flash() ?></div>
+    <?php if ($error): ?>
+      <div class="mb-5 rounded-lg border border-bata bg-bata/10 px-3 py-2.5 text-bata" role="alert"><?= e($error) ?></div>
+    <?php endif; ?>
 
-      <div class="mt-10 max-w-md rounded-2xl border border-garis bg-white p-6">
+    <form method="post" class="space-y-5" novalidate>
+      <?= csrf_field() ?>
+      <div>
+        <label class="block font-bold" for="email">Email</label>
+        <input id="email" name="email" type="email" value="<?= e($email) ?>" autocomplete="username" required
+               class="mt-1.5 w-full border border-garis bg-white px-3 py-3 text-base focus:border-klinik focus:outline-none focus:ring-1 focus:ring-klinik">
+      </div>
+      <div>
         <div class="flex items-baseline justify-between gap-3">
-          <p class="font-mono text-[11px] uppercase tracking-widest text-ink/60">Praktik hari ini</p>
-          <p class="text-xs text-ink/60"><?= e(tanggal_indonesia($hariIni)) ?></p>
+          <label class="block font-bold" for="password">Password</label>
+          <a class="text-sm font-bold text-klinik underline" href="<?= e(url('auth/lupa_password.php')) ?>">Lupa password?</a>
         </div>
-
-        <?php if ($praktik): ?>
-          <div class="mt-4 divide-y divide-garis">
-            <?php foreach ($praktik as $p): ?>
-              <div class="flex items-baseline justify-between gap-4 py-3 text-sm">
-                <span>
-                  <?= e($p['nama']) ?>
-                  <span class="mt-0.5 block text-xs text-ink/60">
-                    Poli <?= e($p['nama_poli']) ?> &middot;
-                    <span class="font-mono"><?= e($p['jam_mulai']) ?>-<?= e($p['jam_selesai']) ?></span>
-                  </span>
-                </span>
-                <span class="whitespace-nowrap font-mono text-xs"><?= (int) $p['terisi'] ?>/<?= (int) $p['kuota'] ?></span>
-              </div>
-            <?php endforeach; ?>
-          </div>
-          <p class="mt-1 text-xs text-ink/50">Angka di kanan: antrean terisi dari kuota.</p>
-        <?php else: ?>
-          <p class="mt-4 text-sm text-ink/70">Tidak ada jadwal praktik hari ini.</p>
-        <?php endif; ?>
-
-        <?php if ($poliList): ?>
-          <div class="mt-5 border-t border-garis pt-4">
-            <p class="font-mono text-[11px] uppercase tracking-widest text-ink/60">Poli tersedia</p>
-            <p class="mt-2 font-mono text-xs leading-relaxed text-klinik"><?= e(implode(' / ', $poliList)) ?></p>
-          </div>
-        <?php endif; ?>
+        <input id="password" name="password" type="password" autocomplete="current-password" required
+               class="mt-1.5 w-full border border-garis bg-white px-3 py-3 text-base focus:border-klinik focus:outline-none focus:ring-1 focus:ring-klinik">
       </div>
-    </section>
+      <button class="w-full bg-klinik px-4 py-3 text-base font-bold text-white">Masuk</button>
+    </form>
 
-    <section class="order-1 w-full max-w-md md:order-2 md:justify-self-end">
-      <div class="rounded-2xl border border-garis bg-white p-8 shadow-sm">
-        <h2 class="font-serif text-2xl font-bold">Masuk</h2>
-        <div class="mt-5"><?= tampil_flash() ?></div>
-        <?php if ($error): ?>
-          <div class="mb-5 border border-bata bg-bata/10 px-3 py-2 text-sm text-bata"><?= e($error) ?></div>
-        <?php endif; ?>
-        <form method="post" class="space-y-5" novalidate>
-          <?= csrf_field() ?>
-          <div>
-            <label class="block text-sm font-medium" for="email">Email</label>
-            <input id="email" name="email" type="email" value="<?= e($email) ?>" autocomplete="username" required
-                   class="mt-1.5 w-full rounded-xl border border-garis bg-white px-3 py-3 text-sm focus:border-klinik focus:outline-none focus:ring-1 focus:ring-klinik">
-          </div>
-          <div>
-            <label class="block text-sm font-medium" for="password">Password</label>
-            <input id="password" name="password" type="password" autocomplete="current-password" required
-                   class="mt-1.5 w-full rounded-xl border border-garis bg-white px-3 py-3 text-sm focus:border-klinik focus:outline-none focus:ring-1 focus:ring-klinik">
-            <p class="mt-2 text-right text-sm">
-              <a class="text-klinik underline" href="<?= e(url('auth/lupa_password.php')) ?>">Lupa password?</a>
-            </p>
-          </div>
-          <button class="w-full rounded-xl bg-klinik px-4 py-3 text-sm font-medium text-white hover:bg-ink">Masuk</button>
-        </form>
-        <p class="mt-6 text-sm">Belum punya akun?
-          <a class="text-klinik underline" href="<?= e(url('auth/register.php')) ?>">Daftar sebagai pasien</a>
-        </p>
+    <p class="mt-6 border-t border-garis pt-5">Belum punya akun?
+      <a class="font-bold text-klinik underline" href="<?= e(url('auth/register.php')) ?>">Daftar sebagai pasien</a>
+    </p>
+    <p class="mt-2 text-sm text-ink/65">Akun dokter dan admin dibuat oleh pengelola klinik.</p>
+  </section>
+
+  <aside class="layar-antrean" aria-label="Praktik hari ini">
+    <div class="layar-antrean__kepala">
+      <strong>Praktik hari ini</strong>
+      <span class="layar-antrean__jam"><?= e(tanggal_indonesia($hariIni)) ?></span>
+    </div>
+    <?php foreach ($praktik as $p): ?>
+      <div class="layar-antrean__baris">
+        <div>
+          <span class="poli-tanda <?= kelas_poli($p['nama_poli']) ?>">Poli <?= e($p['nama_poli']) ?></span>
+          <span class="layar-antrean__dokter"><?= e($p['nama']) ?>, <?= e($p['jam_mulai']) ?>-<?= e($p['jam_selesai']) ?></span>
+        </div>
+        <span class="layar-antrean__nomor layar-antrean__nomor--kosong"><?= (int) $p['terisi'] ?>/<?= (int) $p['kuota'] ?> terisi</span>
       </div>
-    </section>
-
-  </div>
+    <?php endforeach; ?>
+    <?php if (!$praktik): ?>
+      <p class="layar-antrean__kosong">Tidak ada jadwal praktik hari ini.<?= $poliList ? ' Poli tersedia: ' . e(implode(', ', $poliList)) . '.' : '' ?></p>
+    <?php endif; ?>
+  </aside>
 </main>
 <?php require __DIR__ . '/../includes/footer.php'; ?>

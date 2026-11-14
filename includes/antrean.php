@@ -43,7 +43,16 @@ function badge_reservasi($status)
         'tidak_hadir' => 'status-badge--danger',
     ];
     $kelas = isset($peta[$status]) ? $peta[$status] : 'status-badge--neutral';
-    return '<span class="status-badge ' . $kelas . '">' . e(str_replace('_', ' ', $status)) . '</span>';
+    return '<span class="status-badge ' . $kelas . '">' . e(label_reservasi($status)) . '</span>';
+}
+
+function label_reservasi($status)
+{
+    $label = [
+        'menunggu' => 'Menunggu', 'hadir' => 'Hadir', 'diperiksa' => 'Diperiksa',
+        'selesai' => 'Selesai', 'batal' => 'Dibatalkan', 'tidak_hadir' => 'Tidak hadir',
+    ];
+    return isset($label[$status]) ? $label[$status] : str_replace('_', ' ', $status);
 }
 
 function pasien_id_dari_user($pdo, $userId)
@@ -215,30 +224,64 @@ function batalkan_reservasi($pdo, $pasienId, $id)
         : [false, 'Status reservasi sudah berubah dan tidak dapat dibatalkan.'];
 }
 
+function teks_sisa_antrean($n)
+{
+    $n = (int) $n;
+    return $n === 0 ? 'Anda pasien berikutnya' : "$n pasien lagi sebelum Anda";
+}
+
+// Kunci warna poli (lihat assets/app.css .poli--*): Umum, Gigi, Anak, Dalam.
+function kelas_poli($namaPoli)
+{
+    $n = strtolower($namaPoli);
+    foreach (['gigi', 'anak', 'dalam'] as $k) {
+        if (strpos($n, $k) !== false) {
+            return 'poli--' . $k;
+        }
+    }
+    return 'poli--umum';
+}
+
+// Karcis antrean bergaya layar pemanggil di ruang tunggu. Menyala kuning saat
+// giliran sudah dekat (hari ini, sisa <= NOTIF_ANTREAN_SISA) atau saat pasien
+// sedang dipanggil. Teks sisa diperbarui oleh assets/notifikasi.js.
 function karcis_html($r)
 {
-    $kode  = kode_antrean($r['nama_poli'], $r['no_antrean']);
-    $aktif = in_array($r['status'], ['menunggu', 'hadir'], true);
+    $kode     = kode_antrean($r['nama_poli'], $r['no_antrean']);
+    $id       = (int) $r['id'];
+    $menunggu = in_array($r['status'], ['menunggu', 'hadir'], true);
+    $hariIni  = $r['tanggal'] === date('Y-m-d');
+    $batas    = defined('NOTIF_ANTREAN_SISA') ? (int) NOTIF_ANTREAN_SISA : 3;
+    $dekat    = ($menunggu && $hariIni && (int) $r['di_depan'] <= $batas) || $r['status'] === 'diperiksa';
     ob_start();
     ?>
-    <div class="border border-dashed border-ink/40 bg-white p-5">
-      <div class="flex items-start justify-between gap-2">
-        <p class="font-mono text-[11px] uppercase tracking-widest text-ink/60">Nomor antrean</p>
-        <?= badge_reservasi($r['status']) ?>
+    <div class="karcis <?= $dekat ? 'karcis--dekat' : '' ?> <?= $menunggu || $r['status'] === 'diperiksa' ? '' : 'karcis--lewat' ?>"
+         data-karcis="<?= $id ?>" data-hari-ini="<?= $hariIni ? '1' : '0' ?>" data-batas-dekat="<?= $batas ?>">
+      <div class="karcis__layar">
+        <div class="karcis__kepala">
+          <span>Nomor antrean Anda</span>
+          <span class="poli-tanda <?= kelas_poli($r['nama_poli']) ?>">Poli <?= e($r['nama_poli']) ?></span>
+        </div>
+        <p class="karcis__nomor"><?= e($kode) ?></p>
+        <?php if ($r['status'] === 'diperiksa'): ?>
+          <p class="karcis__sisa">Silakan masuk ke ruang periksa</p>
+        <?php elseif ($menunggu): ?>
+          <p class="karcis__sisa" data-sisa="<?= $id ?>"><?= e(teks_sisa_antrean($r['di_depan'])) ?></p>
+          <span hidden data-di-depan="<?= $id ?>"><?= (int) $r['di_depan'] ?></span>
+        <?php else: ?>
+          <p class="karcis__sisa"><?= e(label_reservasi($r['status'])) ?></p>
+        <?php endif; ?>
       </div>
-      <p class="mt-1 font-mono text-6xl font-semibold text-bata"><?= e($kode) ?></p>
-      <hr class="my-3 border-garis">
-      <p class="font-mono text-[11px] uppercase tracking-widest text-ink/60">Poli <?= e($r['nama_poli']) ?></p>
-      <p class="text-sm font-medium"><?= e($r['dokter']) ?></p>
-      <p class="text-sm"><?= e(tanggal_indonesia($r['tanggal'])) ?></p>
-      <p class="font-mono text-xs text-ink/70"><?= e($r['jam_mulai']) ?> - <?= e($r['jam_selesai']) ?></p>
-      <?php if ($aktif): ?>
-        <p class="mt-3 border-t border-garis pt-3 text-xs text-ink/70">
-          Di depan Anda <span class="font-mono" data-di-depan="<?= (int) $r['id'] ?>"><?= (int) $r['di_depan'] ?></span> pasien.
-          Perkiraan dilayani sekitar
-          <span class="font-mono"><?= e(perkiraan_jam($r['jam_mulai'], (int) $r['di_depan'])) ?></span>.
-        </p>
-      <?php endif; ?>
+      <div class="karcis__sobek" aria-hidden="true"></div>
+      <dl class="karcis__rincian">
+        <div><dt>Dokter</dt><dd><?= e($r['dokter']) ?></dd></div>
+        <div><dt>Tanggal</dt><dd><?= e(tanggal_indonesia($r['tanggal'])) ?></dd></div>
+        <div><dt>Jam praktik</dt><dd class="font-mono"><?= e($r['jam_mulai']) ?>-<?= e($r['jam_selesai']) ?></dd></div>
+        <?php if ($menunggu): ?>
+          <div><dt>Perkiraan dilayani</dt><dd class="font-mono">± <?= e(perkiraan_jam($r['jam_mulai'], (int) $r['di_depan'])) ?></dd></div>
+        <?php endif; ?>
+        <div><dt>Status</dt><dd><?= badge_reservasi($r['status']) ?></dd></div>
+      </dl>
     </div>
     <?php
     return ob_get_clean();

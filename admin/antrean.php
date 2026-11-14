@@ -120,7 +120,7 @@ require __DIR__ . '/../includes/panel_start.php';
     </div>
     <div class="mt-2 overflow-x-auto">
       <table class="responsive-table w-full border border-garis bg-white text-left text-sm">
-        <thead class="bg-paper font-mono text-[11px] uppercase tracking-widest text-ink/60">
+        <thead class="bg-paper text-[13px] font-bold text-ink/60">
           <tr><th class="px-3 py-2">Nomor</th><th class="px-3 py-2">Pasien</th><th class="px-3 py-2">Status</th><th class="px-3 py-2">Aksi</th></tr>
         </thead>
         <tbody>

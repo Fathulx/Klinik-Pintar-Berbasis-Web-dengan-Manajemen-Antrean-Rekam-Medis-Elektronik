@@ -6,8 +6,8 @@
   "start_url": "auth/login.php",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#F6F4EE",
-  "theme_color": "#0F5C55",
+  "background_color": "#EEF3F4",
+  "theme_color": "#1B4F82",
   "icons": [
     { "src": "assets/ikon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
     { "src": "assets/ikon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }

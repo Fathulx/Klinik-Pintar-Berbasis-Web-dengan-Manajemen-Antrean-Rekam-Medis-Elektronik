@@ -81,7 +81,7 @@ require __DIR__ . '/../includes/panel_start.php';
 <dl class="stat-grid mt-6 grid grid-cols-3 gap-3">
   <?php foreach ($rawan as $k): ?>
     <div class="bg-white p-4">
-      <dt class="font-mono text-[11px] uppercase tracking-widest text-ink/60"><?= e(str_replace('_', ' ', $k)) ?> (24 jam)</dt>
+      <dt class="text-[13px] font-bold text-ink/60"><?= e(str_replace('_', ' ', $k)) ?> (24 jam)</dt>
       <dd class="mt-1 font-mono text-3xl font-semibold <?= $ring[$k] > 0 ? 'text-bata' : 'text-klinik' ?>"><?= $ring[$k] ?></dd>
     </div>
   <?php endforeach; ?>
@@ -119,7 +119,7 @@ require __DIR__ . '/../includes/panel_start.php';
 
 <div class="mt-2 overflow-x-auto">
   <table class="responsive-table w-full border border-garis bg-white text-left text-sm">
-    <thead class="bg-paper font-mono text-[11px] uppercase tracking-widest text-ink/60">
+    <thead class="bg-paper text-[13px] font-bold text-ink/60">
       <tr><th class="px-3 py-2">Waktu</th><th class="px-3 py-2">Pengguna</th><th class="px-3 py-2">Aksi</th><th class="px-3 py-2">Detail</th><th class="px-3 py-2">IP</th></tr>
     </thead>
     <tbody>

@@ -13,8 +13,13 @@ function nilaiRespons(status, contentType, dialihkan) {
   return 'coba_lagi';
 }
 
+// sama dengan teks_sisa_antrean() di includes/antrean.php
+function teksSisa(n) {
+  return n === 0 ? 'Anda pasien berikutnya' : n + ' pasien lagi sebelum Anda';
+}
+
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { nilaiRespons: nilaiRespons };
+  module.exports = { nilaiRespons: nilaiRespons, teksSisa: teksSisa };
 }
 
 (function () {
@@ -131,6 +136,13 @@ if (typeof module !== 'undefined' && module.exports) {
         (data.antrean || []).forEach(function (r) {
           var el = document.querySelector('[data-di-depan="' + r.id + '"]');
           if (el) el.textContent = String(r.di_depan);
+          // karcis layar antrean: teks sisa dan nyala kuning saat sudah dekat
+          var sisa = document.querySelector('[data-sisa="' + r.id + '"]');
+          if (sisa) sisa.textContent = teksSisa(r.di_depan);
+          var karcis = document.querySelector('[data-karcis="' + r.id + '"]');
+          if (karcis && karcis.getAttribute('data-hari-ini') === '1') {
+            karcis.classList.toggle('karcis--dekat', r.di_depan <= Number(karcis.getAttribute('data-batas-dekat') || 3));
+          }
         });
       })
       .catch(function () { /* jaringan putus: coba lagi di putaran berikut */ });
