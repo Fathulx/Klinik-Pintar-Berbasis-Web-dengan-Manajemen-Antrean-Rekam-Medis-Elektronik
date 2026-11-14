@@ -36,6 +36,9 @@ Perkiraan durasi: 10 menit demo + tanya jawab. Semua akun demo memakai password
      Alamat terowongan berubah tiap dijalankan, jadi aktifkan ulang di HP pada
      hari itu.
    - Windows: matikan **Focus assist**, izinkan notifikasi Chrome.
+   - Jangan pakai profil Chrome yang dikelola kampus (akun uir.ac.id) untuk
+     jendela pasien: kebijakannya menahan banner notifikasi. Pakai profil
+     pribadi atau Microsoft Edge, lalu tekan **Aktifkan notifikasi** dari sana.
 
 ## Alur demo
 
