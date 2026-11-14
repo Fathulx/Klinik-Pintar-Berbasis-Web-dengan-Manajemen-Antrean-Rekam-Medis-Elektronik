@@ -17,6 +17,21 @@ function test_teks_sisa_antrean()
     sama('12 pasien lagi sebelum Anda', teks_sisa_antrean(12), 'banyak');
 }
 
+function test_ikon_poli_dan_menu()
+{
+    require_once __DIR__ . '/../includes/ikon.php';
+    require_once __DIR__ . '/../includes/menu.php';
+    cek(strpos(ikon_poli('Gigi'), ikon('gigi')) === 0, 'poli gigi');
+    cek(ikon_poli('Penyakit Dalam') === ikon('jantung'), 'poli dalam');
+    cek(ikon_poli('Umum') === ikon('stetoskop'), 'poli lain');
+    cek(strpos(ikon('tidak-ada'), 'aria-hidden="true"') !== false, 'ikon dekoratif');
+    foreach (['super_admin', 'admin', 'dokter', 'user'] as $peran) {
+        foreach (menu_panel($peran) as $m) {
+            cek(isset($m[2]) && $m[2] !== '', "menu {$m[1]} punya ikon");
+        }
+    }
+}
+
 function test_usia_dihitung_pada_tanggal_kunjungan()
 {
     sama(32, usia_tahun('1994-03-12', '2026-11-14'), 'sudah lewat ulang tahun');

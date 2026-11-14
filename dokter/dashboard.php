@@ -60,7 +60,7 @@ require __DIR__ . '/../includes/panel_start.php';
 <dl class="stat-grid mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
   <?php foreach (['menunggu' => 'Belum hadir', 'hadir' => 'Hadir', 'diperiksa' => 'Diperiksa', 'selesai' => 'Selesai'] as $k => $nama): ?>
     <div class="bg-white p-4">
-      <dt class="text-[13px] font-bold text-ink/60"><?= e($nama) ?> hari ini</dt>
+      <dt class="text-[13px] font-semibold text-ink/60"><?= e($nama) ?> hari ini</dt>
       <dd class="mt-1 font-mono text-3xl font-semibold text-klinik"><?= isset($hitung[$k]) ? $hitung[$k] : 0 ?></dd>
     </div>
   <?php endforeach; ?>
@@ -68,7 +68,7 @@ require __DIR__ . '/../includes/panel_start.php';
 
 <section class="mt-8 border border-garis bg-white p-5">
   <?php if ($sedang): ?>
-    <p class="text-[13px] font-bold text-ink/60">Sedang diperiksa</p>
+    <p class="text-[13px] font-semibold text-ink/60">Sedang diperiksa</p>
     <p class="mt-1 font-serif text-2xl font-bold">
       <span class="font-mono text-bata"><?= e(kode_antrean($sedang['nama_poli'], $sedang['no_antrean'])) ?></span>
       <?= e($sedang['pasien']) ?>
@@ -76,7 +76,7 @@ require __DIR__ . '/../includes/panel_start.php';
     <a class="mt-3 inline-block bg-bata px-4 py-2 text-sm font-medium text-white hover:bg-ink"
        href="<?= e(url('dokter/periksa.php?id=' . (int) $sedang['id'])) ?>">Lanjutkan pemeriksaan</a>
   <?php elseif ($berikut): ?>
-    <p class="text-[13px] font-bold text-ink/60">Pasien berikutnya (sudah hadir)</p>
+    <p class="text-[13px] font-semibold text-ink/60">Pasien berikutnya (sudah hadir)</p>
     <p class="mt-1 font-serif text-2xl font-bold">
       <span class="font-mono text-bata"><?= e(kode_antrean($berikut['nama_poli'], $berikut['no_antrean'])) ?></span>
       <?= e($berikut['pasien']) ?>

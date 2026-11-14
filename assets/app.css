@@ -1424,3 +1424,222 @@ h1.font-serif {
   font-family: "Barlow Semi Condensed", sans-serif;
   font-size: 0.95rem;
 }
+
+/* =====================================================================
+   Pelunak: lebih ramah tanpa meninggalkan konsep ruang tunggu
+   (huruf Plus Jakarta Sans, sudut panel lebih bulat, bayangan tipis,
+   biru tua lebih hangat, mint untuk informasi dan status aman)
+   ===================================================================== */
+
+:root {
+  --layar: #173A5E;
+  --mint: #E4F3EE;
+  --mint-garis: #BFE3D5;
+  --mint-tinta: #1D6B55;
+  --bayang: 0 1px 2px rgb(18 41 59 / 4%), 0 6px 18px rgb(18 41 59 / 6%);
+}
+
+body {
+  background-color: #F1F5F6;
+}
+
+/* judul: tebal tapi tidak berteriak */
+.font-serif,
+h1,
+h2,
+h3 {
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+
+h1.font-serif {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+h2.font-serif,
+h3.font-serif {
+  font-weight: 650;
+}
+
+/* panel dan kartu: sudut 16px, sedikit terangkat dari latar */
+main div[class~="border-garis"][class~="bg-white"],
+.stat-grid > div,
+.karcis,
+.layar-antrean {
+  border-radius: 1rem;
+  box-shadow: var(--bayang);
+}
+
+table {
+  border-radius: 1rem;
+  box-shadow: var(--bayang);
+}
+
+.karcis {
+  border-color: transparent;
+}
+
+.karcis__layar {
+  background: var(--layar);
+}
+
+/* informasi dan pesan berhasil: mint yang tenang */
+[class~="bg-klinik/10"] {
+  border-color: var(--mint-garis) !important;
+  background-color: var(--mint) !important;
+  color: var(--mint-tinta) !important;
+}
+
+.flash {
+  border-radius: 0.75rem;
+}
+
+/* judul layar dan merek memakai huruf teks, angka tetap Barlow */
+.layar-antrean__kepala strong,
+.merek {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.merek {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.merek__tanda {
+  border-radius: 0.5rem;
+}
+
+.karcis__kepala,
+.karcis__rincian dt {
+  letter-spacing: 0;
+}
+
+.karcis__sisa {
+  font-weight: 600;
+}
+
+/* tombol utama sedikit lebih bulat agar tidak terasa seperti formulir kantor */
+button[class*="bg-klinik"]:not([class*="bg-klinik/"]),
+a[class*="bg-klinik"]:not([class*="bg-klinik/"]),
+button[class*="bg-bata"]:not([class*="bg-bata/"]),
+a[class*="bg-bata"]:not([class*="bg-bata/"]),
+.action-button,
+.public-nav a {
+  border-radius: 0.65rem;
+  font-weight: 600;
+}
+
+/* ---------- Ikon ---------- */
+.ikon {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex: none;
+}
+
+/* menu samping: ikon + teks, yang aktif berlatar biru muda */
+.menu-tautan {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  border-radius: 0.65rem;
+  padding: 0.6rem 0.75rem;
+  color: rgb(18 41 59 / 78%);
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.menu-tautan .ikon {
+  color: rgb(18 41 59 / 45%);
+}
+
+.menu-tautan:hover {
+  background: #F1F5F6;
+  color: var(--tinta);
+}
+
+.menu-tautan.is-aktif {
+  background: #E6EFF8;
+  color: var(--petunjuk);
+  font-weight: 650;
+}
+
+.menu-tautan.is-aktif .ikon {
+  color: var(--petunjuk);
+}
+
+.panel-desktop-menu nav {
+  display: grid;
+  gap: 0.15rem;
+}
+
+/* tanda poli: ikon dalam lingkaran berwarna, menggantikan kotak kecil */
+.poli-tanda::before {
+  display: none;
+}
+
+.poli-tanda {
+  gap: 0.45rem;
+  font-weight: 600;
+}
+
+.poli-tanda__ikon {
+  display: inline-grid;
+  width: 1.55rem;
+  height: 1.55rem;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--warna-poli, var(--poli-umum));
+  color: #fff;
+}
+
+.poli-tanda__ikon .ikon {
+  width: 0.95rem;
+  height: 0.95rem;
+  stroke-width: 2;
+}
+
+.karcis__kepala .poli-tanda,
+.layar-antrean .poli-tanda {
+  background: none;
+  padding: 0;
+}
+
+/* ---------- Gerak: teks sisa antrean berganti saat antrean maju ---------- */
+@keyframes sisa-berganti {
+  0% { opacity: 0; transform: translateY(0.6rem); }
+  60% { opacity: 1; transform: translateY(-0.08rem); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.karcis__sisa.berganti {
+  animation: sisa-berganti 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* saat menjadi "dekat", layar karcis berkedip sekali seperti panggilan */
+@keyframes layar-panggil {
+  0%, 100% { box-shadow: inset 0 0 0 0 rgb(242 183 5 / 0%); }
+  40% { box-shadow: inset 0 0 0 4px rgb(242 183 5 / 85%); }
+}
+
+.karcis--dekat .karcis__layar {
+  animation: layar-panggil 900ms ease-out 1;
+}
+
+/* Plus Jakarta Sans punya spasi kata sempit: dilonggarkan sedikit */
+body {
+  word-spacing: 0.04em;
+}
+
+h1.font-serif {
+  letter-spacing: -0.018em;
+  word-spacing: 0.08em;
+}
+
+h2.font-serif,
+h3.font-serif {
+  word-spacing: 0.05em;
+}

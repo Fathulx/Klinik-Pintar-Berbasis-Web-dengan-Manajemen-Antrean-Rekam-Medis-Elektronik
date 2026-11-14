@@ -178,7 +178,7 @@ require __DIR__ . '/../includes/panel_start.php';
 
 <div class="mt-4 flex flex-wrap items-start gap-6 border border-garis bg-white p-5">
   <div>
-    <p class="text-[13px] font-bold text-ink/60">Nomor antrean</p>
+    <p class="text-[13px] font-semibold text-ink/60">Nomor antrean</p>
     <p class="font-mono text-4xl font-semibold text-bata"><?= e(kode_antrean($r['nama_poli'], $r['no_antrean'])) ?></p>
   </div>
   <div>
@@ -251,15 +251,15 @@ require __DIR__ . '/../includes/panel_start.php';
   $bagian = ['Keluhan pasien' => $form['keluhan'], 'Hasil pemeriksaan' => $form['pemeriksaan'], 'Catatan dokter' => $form['catatan_dokter']];
   foreach ($bagian as $judulBagian => $isi): ?>
     <div>
-      <p class="text-[13px] font-bold text-ink/60"><?= e($judulBagian) ?></p>
+      <p class="text-[13px] font-semibold text-ink/60"><?= e($judulBagian) ?></p>
       <p class="mt-1 whitespace-pre-line border border-garis bg-white px-3 py-2 text-sm"><?= e($isi !== null && $isi !== '' ? $isi : '-') ?></p>
     </div>
   <?php endforeach; ?>
   <div>
-    <p class="text-[13px] font-bold text-ink/60">Resep</p>
+    <p class="text-[13px] font-semibold text-ink/60">Resep</p>
     <?php $adaResep = false; ?>
     <table class="responsive-table mt-1 w-full border border-garis bg-white text-left text-sm">
-      <thead class="bg-paper text-[13px] font-bold text-ink/60">
+      <thead class="bg-paper text-[13px] font-semibold text-ink/60">
         <tr><th class="px-3 py-2">Obat</th><th class="px-3 py-2">Dosis</th><th class="px-3 py-2">Aturan pakai</th></tr>
       </thead>
       <tbody>

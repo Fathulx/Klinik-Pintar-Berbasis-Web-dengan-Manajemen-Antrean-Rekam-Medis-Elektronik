@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/menu.php';
+require_once __DIR__ . '/ikon.php';
 require __DIR__ . '/header.php';
 $menu  = menu_panel($user['role']);
 $aktif = isset($aktif) ? $aktif : '';
@@ -9,7 +10,7 @@ $aktif = isset($aktif) ? $aktif : '';
     <div class="panel-brand-row px-5 py-5">
       <div>
         <a href="<?= e(url(dashboard_path($user['role']))) ?>" class="merek"><span class="merek__tanda" aria-hidden="true"></span>Klinik Pintar</a>
-        <p class="mt-0.5 pl-[2.3rem] text-[13px] font-bold text-ink/60"><?= e(label_peran($user['role'])) ?></p>
+        <p class="mt-0.5 pl-[2.3rem] text-[13px] font-semibold text-ink/60"><?= e(label_peran($user['role'])) ?></p>
       </div>
       <details class="panel-mobile-menu panel-mobile-menu--overlay panel-mobile-menu--hamburger">
         <summary class="panel-mobile-menu__toggle" aria-label="Buka menu" aria-expanded="false">
@@ -19,9 +20,8 @@ $aktif = isset($aktif) ? $aktif : '';
         <div class="panel-mobile-menu__content">
           <nav class="flex gap-1 overflow-x-auto px-3 pb-3 md:block md:space-y-1 md:px-3 md:pb-5">
             <?php foreach ($menu as $m): $on = ($m[1] === $aktif); ?>
-              <a href="<?= e(url($m[1])) ?>"
-                 class="whitespace-nowrap rounded-lg border-b-2 px-3 py-2 md:block md:border-b-0 md:border-l-2 <?= $on ? 'border-klinik bg-paper font-bold text-klinik' : 'border-transparent hover:bg-paper' ?>">
-                <?= e($m[0]) ?>
+              <a href="<?= e(url($m[1])) ?>" class="menu-tautan <?= $on ? 'is-aktif border-klinik' : '' ?>"<?= $on ? ' aria-current="page"' : '' ?>>
+                <?= ikon($m[2]) ?><span><?= e($m[0]) ?></span>
               </a>
             <?php endforeach; ?>
           </nav>
@@ -114,9 +114,8 @@ $aktif = isset($aktif) ? $aktif : '';
     <div class="panel-desktop-menu">
       <nav class="space-y-1 px-3 pb-5">
         <?php foreach ($menu as $m): $on = ($m[1] === $aktif); ?>
-          <a href="<?= e(url($m[1])) ?>"
-             class="block whitespace-nowrap rounded-lg border-l-[3px] px-3 py-2.5 <?= $on ? 'border-klinik bg-paper font-bold text-klinik' : 'border-transparent hover:bg-paper' ?>">
-            <?= e($m[0]) ?>
+          <a href="<?= e(url($m[1])) ?>" class="menu-tautan <?= $on ? 'is-aktif' : '' ?>"<?= $on ? ' aria-current="page"' : '' ?>>
+            <?= ikon($m[2]) ?><span><?= e($m[0]) ?></span>
           </a>
         <?php endforeach; ?>
       </nav>
@@ -153,6 +152,6 @@ $aktif = isset($aktif) ? $aktif : '';
                 class="rounded-full bg-bata px-2 py-0.5 font-mono text-[11px] font-semibold text-white"><?= $notifBelum > 99 ? '99+' : (int) $notifBelum ?></span>
         </a>
       </div>
-      <script src="<?= e(url('assets/notifikasi.js')) ?>" defer></script>
+      <script src="<?= e(url('assets/notifikasi.js?v=' . filemtime(__DIR__ . '/../assets/notifikasi.js'))) ?>" defer></script>
     <?php endif; ?>
     <?= tampil_flash() ?>

@@ -242,6 +242,14 @@ function kelas_poli($namaPoli)
     return 'poli--umum';
 }
 
+// Tanda poli: ikon dalam lingkaran berwarna poli + nama poli.
+function tanda_poli_html($namaPoli)
+{
+    require_once __DIR__ . '/ikon.php';
+    return '<span class="poli-tanda ' . kelas_poli($namaPoli) . '"><span class="poli-tanda__ikon">'
+        . ikon_poli($namaPoli) . '</span>Poli ' . e($namaPoli) . '</span>';
+}
+
 // Karcis antrean bergaya layar pemanggil di ruang tunggu. Menyala kuning saat
 // giliran sudah dekat (hari ini, sisa <= NOTIF_ANTREAN_SISA) atau saat pasien
 // sedang dipanggil. Teks sisa diperbarui oleh assets/notifikasi.js.
@@ -260,7 +268,7 @@ function karcis_html($r)
       <div class="karcis__layar">
         <div class="karcis__kepala">
           <span>Nomor antrean Anda</span>
-          <span class="poli-tanda <?= kelas_poli($r['nama_poli']) ?>">Poli <?= e($r['nama_poli']) ?></span>
+          <?= tanda_poli_html($r['nama_poli']) ?>
         </div>
         <p class="karcis__nomor"><?= e($kode) ?></p>
         <?php if ($r['status'] === 'diperiksa'): ?>

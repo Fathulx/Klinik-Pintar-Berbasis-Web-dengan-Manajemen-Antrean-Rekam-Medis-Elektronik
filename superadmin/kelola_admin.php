@@ -107,7 +107,7 @@ require __DIR__ . '/../includes/panel_start.php';
 <div class="mt-6 grid gap-8 lg:grid-cols-3">
   <section class="overflow-x-auto lg:col-span-2">
     <table class="responsive-table w-full border border-garis bg-white text-left text-sm">
-      <thead class="bg-paper text-[13px] font-bold text-ink/60">
+      <thead class="bg-paper text-[13px] font-semibold text-ink/60">
         <tr><th class="px-3 py-2">Nama</th><th class="px-3 py-2">Email</th><th class="px-3 py-2">Status</th><th class="px-3 py-2">Aksi</th></tr>
       </thead>
       <tbody>
@@ -144,7 +144,7 @@ require __DIR__ . '/../includes/panel_start.php';
     <p class="mt-1 text-sm text-ink/70">Reset password Super Admin lain jika mereka lupa. Untuk akun Anda sendiri, gunakan Ganti password.</p>
     <?php if ($superLain): ?>
       <table class="responsive-table mt-3 w-full border border-garis bg-white text-left text-sm">
-        <thead class="bg-paper text-[13px] font-bold text-ink/60">
+        <thead class="bg-paper text-[13px] font-semibold text-ink/60">
           <tr><th class="px-3 py-2">Nama</th><th class="px-3 py-2">Email</th><th class="px-3 py-2">Status</th><th class="px-3 py-2">Aksi</th></tr>
         </thead>
         <tbody>

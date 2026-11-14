@@ -66,7 +66,7 @@ require __DIR__ . '/../includes/panel_start.php';
 <dl class="stat-grid mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
   <?php foreach (['Antrean hari ini' => 'total', 'Belum hadir' => 'menunggu', 'Hadir atau diperiksa' => 'hadir', 'Selesai' => 'selesai'] as $nama => $k): ?>
     <div class="bg-white p-4">
-      <dt class="text-[13px] font-bold text-ink/60"><?= e($nama) ?></dt>
+      <dt class="text-[13px] font-semibold text-ink/60"><?= e($nama) ?></dt>
       <dd class="mt-1 font-mono text-3xl font-semibold text-klinik"><?= (int) $hari[$k] ?></dd>
     </div>
   <?php endforeach; ?>
@@ -97,7 +97,7 @@ require __DIR__ . '/../includes/panel_start.php';
     </div>
     <div class="mt-1 flex gap-2">
       <?php foreach ($deret as $d): ?>
-        <span class="flex-1 text-center text-[13px] font-bold text-ink/60"><?= e(mb_substr(hari_dari_tanggal($d['tgl']), 0, 3)) ?></span>
+        <span class="flex-1 text-center text-[13px] font-semibold text-ink/60"><?= e(mb_substr(hari_dari_tanggal($d['tgl']), 0, 3)) ?></span>
       <?php endforeach; ?>
     </div>
   </section>
@@ -106,7 +106,7 @@ require __DIR__ . '/../includes/panel_start.php';
     <h2 class="font-serif text-xl font-bold">Praktik hari ini</h2>
     <div class="mt-3 overflow-x-auto">
       <table class="responsive-table w-full border border-garis bg-white text-left text-sm">
-        <thead class="bg-paper text-[13px] font-bold text-ink/60">
+        <thead class="bg-paper text-[13px] font-semibold text-ink/60">
           <tr><th class="px-3 py-2">Dokter</th><th class="px-3 py-2">Jam</th><th class="px-3 py-2">Terisi</th></tr>
         </thead>
         <tbody>

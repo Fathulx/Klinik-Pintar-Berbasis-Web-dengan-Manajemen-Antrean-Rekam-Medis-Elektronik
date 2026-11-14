@@ -68,7 +68,7 @@ require __DIR__ . '/../includes/panel_start.php';
 <h2 class="mt-10 font-serif text-xl font-bold">Riwayat</h2>
 <div class="mt-3 overflow-x-auto">
   <table class="responsive-table w-full border border-garis bg-white text-left text-sm">
-    <thead class="bg-paper text-[13px] font-bold text-ink/60">
+    <thead class="bg-paper text-[13px] font-semibold text-ink/60">
       <tr><th class="px-3 py-2">Tanggal</th><th class="px-3 py-2">Dokter</th><th class="px-3 py-2">Nomor</th><th class="px-3 py-2">Status</th></tr>
     </thead>
     <tbody>

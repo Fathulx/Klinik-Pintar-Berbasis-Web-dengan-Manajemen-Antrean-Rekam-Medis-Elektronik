@@ -62,7 +62,7 @@ require __DIR__ . '/../includes/panel_start.php';
         <?php foreach ($terakhir as $k): ?>
           <li class="flex flex-wrap items-center justify-between gap-3 py-3.5">
             <div>
-              <span class="poli-tanda <?= kelas_poli($k['nama_poli']) ?>">Poli <?= e($k['nama_poli']) ?></span>
+              <?= tanda_poli_html($k['nama_poli']) ?>
               <p class="mt-0.5 font-bold"><?= e($k['dokter']) ?></p>
               <p class="text-sm text-ink/70"><?= e(tanggal_indonesia($k['tanggal'])) ?></p>
             </div>

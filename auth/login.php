@@ -136,7 +136,7 @@ require __DIR__ . '/../includes/public_nav.php';
     <?php foreach ($praktik as $p): ?>
       <div class="layar-antrean__baris">
         <div>
-          <span class="poli-tanda <?= kelas_poli($p['nama_poli']) ?>">Poli <?= e($p['nama_poli']) ?></span>
+          <?= tanda_poli_html($p['nama_poli']) ?>
           <span class="layar-antrean__dokter"><?= e($p['nama']) ?>, <?= e($p['jam_mulai']) ?>-<?= e($p['jam_selesai']) ?></span>
         </div>
         <span class="layar-antrean__nomor layar-antrean__nomor--kosong"><?= (int) $p['terisi'] ?>/<?= (int) $p['kuota'] ?> terisi</span>

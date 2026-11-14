@@ -110,7 +110,7 @@ require __DIR__ . '/includes/public_nav.php';
       <?php foreach ($praktik as $p): ?>
         <div class="layar-antrean__baris">
           <div>
-            <span class="poli-tanda <?= kelas_poli($p['nama_poli']) ?>">Poli <?= e($p['nama_poli']) ?></span>
+            <?= tanda_poli_html($p['nama_poli']) ?>
             <span class="layar-antrean__dokter"><?= e($p['nama']) ?>, <?= e($p['jam_mulai']) ?>-<?= e($p['jam_selesai']) ?></span>
           </div>
           <?php if ($p['dilayani']): ?>
@@ -138,7 +138,7 @@ require __DIR__ . '/includes/public_nav.php';
         <?php foreach ($poli as $p): foreach ($p['dokter'] as $d): ?>
           <div class="papan-jadwal__baris">
             <div>
-              <span class="poli-tanda <?= kelas_poli($p['nama']) ?>">Poli <?= e($p['nama']) ?></span>
+              <?= tanda_poli_html($p['nama']) ?>
               <p class="mt-0.5 text-lg font-bold"><?= e($d['nama']) ?></p>
               <p class="text-sm text-ink/70"><?= e($d['bio']) ?></p>
             </div>

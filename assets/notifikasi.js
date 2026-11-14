@@ -138,7 +138,13 @@ if (typeof module !== 'undefined' && module.exports) {
           if (el) el.textContent = String(r.di_depan);
           // karcis layar antrean: teks sisa dan nyala kuning saat sudah dekat
           var sisa = document.querySelector('[data-sisa="' + r.id + '"]');
-          if (sisa) sisa.textContent = teksSisa(r.di_depan);
+          if (sisa && sisa.textContent !== teksSisa(r.di_depan)) {
+            sisa.textContent = teksSisa(r.di_depan);
+            // berganti seperti angka di layar antrean; hanya saat ada perubahan
+            sisa.classList.remove('berganti');
+            void sisa.offsetWidth;
+            sisa.classList.add('berganti');
+          }
           var karcis = document.querySelector('[data-karcis="' + r.id + '"]');
           if (karcis && karcis.getAttribute('data-hari-ini') === '1') {
             karcis.classList.toggle('karcis--dekat', r.di_depan <= Number(karcis.getAttribute('data-batas-dekat') || 3));
