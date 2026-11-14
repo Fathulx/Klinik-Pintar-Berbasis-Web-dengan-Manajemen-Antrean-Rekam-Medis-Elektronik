@@ -481,7 +481,7 @@ tbody tr:hover {
   outline-offset: 2px;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .panel-desktop-menu {
     display: none;
   }
@@ -983,7 +983,7 @@ tbody tr:hover {
   }
 }
 
-@media (min-width: 641px) {
+@media (min-width: 768px) {
   .panel-brand-row > .panel-mobile-menu--hamburger {
     display: none;
   }
