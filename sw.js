@@ -22,15 +22,20 @@ self.addEventListener('push', function (event) {
     data = { pesan: event.data ? event.data.text() : '' };
   }
 
+  // Notifikasi lama ditutup dulu, lalu yang baru ditampilkan dengan tag unik.
+  // Memakai tag yang sama membuat Windows hanya memperbarui notifikasi di
+  // Action Center tanpa memunculkan banner; cara ini tetap tidak menumpuk.
   event.waitUntil(
-    self.registration.showNotification(data.judul || 'Klinik Pintar', {
-      body: data.pesan || '',
-      icon: alamat('assets/ikon-192.png'),
-      badge: alamat('assets/ikon-badge.png'),
-      tag: 'antrean',          // notifikasi baru menggantikan yang lama
-      renotify: true,          // tetap berbunyi/bergetar saat menggantikan
-      vibrate: [200, 100, 200],
-      data: { url: alamat(data.url || 'user/notifikasi.php') }
+    self.registration.getNotifications().then(function (lama) {
+      lama.forEach(function (n) { n.close(); });
+      return self.registration.showNotification(data.judul || 'Klinik Pintar', {
+        body: data.pesan || '',
+        icon: alamat('assets/ikon-192.png'),
+        badge: alamat('assets/ikon-badge.png'),
+        tag: 'antrean-' + Date.now(),
+        vibrate: [200, 100, 200],
+        data: { url: alamat(data.url || 'user/notifikasi.php') }
+      });
     })
   );
 });
