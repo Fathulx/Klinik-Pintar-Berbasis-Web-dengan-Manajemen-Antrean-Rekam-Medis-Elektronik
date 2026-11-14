@@ -129,6 +129,37 @@ function proses_notif_antrean_dekat(PDO $pdo, $tanggal, $jamSekarang, $pasienId 
     return $dibuat;
 }
 
+// Pasien dipanggil dokter ke ruang periksa: notifikasi di aplikasi dan HP,
+// seperti panggilan di ruang tunggu. Kegagalan dicatat ke log dan tidak
+// menggagalkan pemanggilan.
+function notif_dipanggil(PDO $pdo, $reservasiId)
+{
+    try {
+        $st = $pdo->prepare(
+            "SELECT r.no_antrean, ps.user_id, p.nama_poli, ud.nama AS dokter
+             FROM reservasi r
+             JOIN pasien ps ON ps.id = r.pasien_id
+             JOIN jadwal_dokter j ON j.id = r.jadwal_id
+             JOIN dokter d ON d.id = j.dokter_id
+             JOIN users ud ON ud.id = d.user_id
+             JOIN poli p ON p.id = d.poli_id
+             WHERE r.id = ? AND r.status = 'diperiksa'"
+        );
+        $st->execute([(int) $reservasiId]);
+        $r = $st->fetch();
+        if (!$r) {
+            return;
+        }
+        $judul = 'Silakan masuk ke ruang periksa';
+        $pesan = 'Antrean ' . kode_antrean($r['nama_poli'], $r['no_antrean'])
+            . " (Poli {$r['nama_poli']}): {$r['dokter']} memanggil Anda sekarang.";
+        buat_notifikasi($pdo, $r['user_id'], $judul, $pesan, 'user/antrean.php');
+        kirim_push_ke_user($pdo, $r['user_id'], $judul, $pesan, 'user/antrean.php');
+    } catch (PDOException $ex) {
+        error_log((string) $ex);
+    }
+}
+
 // Dipanggil halaman setelah status antrean berubah. Kegagalan notifikasi
 // dicatat ke log dan tidak menggagalkan aksi utama.
 function picu_notif_antrean(PDO $pdo, $pasienId = null)

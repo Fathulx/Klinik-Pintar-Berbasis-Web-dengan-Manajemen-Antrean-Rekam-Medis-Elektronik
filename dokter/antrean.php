@@ -57,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && post('aksi') === 'panggil') {
             if ($up->rowCount() > 0) {
                 $pdo->commit();
                 catat_log('panggil_pasien', 'reservasi ' . $id);
+                notif_dipanggil($pdo, $id); // panggilan ke HP pasien, seperti di ruang tunggu
                 redirect('dokter/periksa.php?id=' . $id);
             }
             $pdo->rollBack();

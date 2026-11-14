@@ -252,6 +252,33 @@ function test_notif_antrean_juga_dikirim_sebagai_push()
     sama(['https://fcm.googleapis.com/fcm/send/hp2'], $terkirim, 'push hanya ke perangkat pasien nomor 2');
 }
 
+// Saat dokter memanggil, pasien menerima notifikasi di aplikasi dan di HP.
+function test_pasien_diberi_tahu_saat_dipanggil()
+{
+    $pdo = test_pdo();
+    $d = buat_reservasi_uji($pdo, '2026-11-12', '09:00', ['diperiksa', 'menunggu']);
+    $l = _langganan_uji();
+    simpan_langganan_push($pdo, $d['reservasi'][1]['user_id'], 'https://fcm.googleapis.com/fcm/send/hp1',
+        $l['p256dh'], $l['auth'], 'HP');
+
+    $terkirim = [];
+    $GLOBALS['webpush_transport_uji'] = function ($url) use (&$terkirim) { $terkirim[] = $url; return 201; };
+    $GLOBALS['webpush_kunci_uji'] = _kunci_uji();
+    try {
+        notif_dipanggil($pdo, $d['reservasi'][1]['id']);
+    } finally {
+        unset($GLOBALS['webpush_transport_uji'], $GLOBALS['webpush_kunci_uji']);
+    }
+    sama(['https://fcm.googleapis.com/fcm/send/hp1'], $terkirim, 'push ke HP pasien yang dipanggil');
+
+    $st = $pdo->prepare('SELECT judul, pesan, tautan FROM notifikasi WHERE user_id = ?');
+    $st->execute([$d['reservasi'][1]['user_id']]);
+    $n = $st->fetch();
+    sama('Silakan masuk ke ruang periksa', $n['judul'], 'judul');
+    cek(strpos($n['pesan'], 'memanggil Anda') !== false, 'pesan: ' . $n['pesan']);
+    sama(0, (int) $pdo->query('SELECT COUNT(*) FROM notifikasi WHERE user_id = ' . (int) $d['reservasi'][2]['user_id'])->fetchColumn(), 'pasien lain tidak');
+}
+
 function test_tabel_push_langganan_ada()
 {
     $st = test_pdo()->prepare('SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = ? AND table_name = ?');

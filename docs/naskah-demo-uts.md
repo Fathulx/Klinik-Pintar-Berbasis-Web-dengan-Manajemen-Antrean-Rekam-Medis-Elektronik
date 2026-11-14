@@ -54,7 +54,9 @@ Perkiraan durasi: 10 menit demo + tanya jawab. Semua akun demo memakai password
 
 **3. Dokter memeriksa (Edge), sekitar 2 menit**
 - **Antrean Hari Ini**: tombol **Panggil** muncul sendiri begitu admin
-  mengonfirmasi hadir (halaman dokter juga diperbarui otomatis). Tekan **Panggil**.
+  mengonfirmasi hadir (halaman dokter juga diperbarui otomatis). Tekan **Panggil**:
+  HP pasien menerima "Silakan masuk ke ruang periksa" dan karcisnya di
+  laptop pasien ikut berubah tanpa refresh.
 - Bila ditanya "bagaimana kalau pasien dipanggil tapi tidak masuk?": dokter
   menekan **Tidak datang**, antrean bergeser dan pasien berikutnya diberi
   notifikasi. Pembagian tugas: admin mencatat kedatangan, dokter memanggil dan
