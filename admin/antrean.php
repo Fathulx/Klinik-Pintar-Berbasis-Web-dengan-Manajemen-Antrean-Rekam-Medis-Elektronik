@@ -126,7 +126,7 @@ require __DIR__ . '/../includes/panel_start.php';
         <tbody>
           <?php foreach ($g['baris'] as $r): ?>
             <tr class="border-t border-garis" data-reservasi="<?= (int) $r['id'] ?>" data-status="<?= e($r['status']) ?>">
-              <td data-label="Nomor" class="px-3 py-2 font-mono font-semibold text-bata"><?= e(kode_antrean($r['nama_poli'], $r['no_antrean'])) ?></td>
+              <td data-label="Nomor" class="px-3 py-2 font-mono text-lg font-bold text-klinik"><?= e(kode_antrean($r['nama_poli'], $r['no_antrean'])) ?></td>
               <td data-label="Pasien" class="px-3 py-2"><?= e($r['pasien']) ?></td>
               <td data-label="Status" class="px-3 py-2"><?= badge_reservasi($r['status']) ?></td>
               <td data-label="Aksi" class="whitespace-nowrap px-3 py-2">

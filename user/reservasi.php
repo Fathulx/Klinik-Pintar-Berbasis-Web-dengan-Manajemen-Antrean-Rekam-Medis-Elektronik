@@ -166,53 +166,60 @@ $judul = 'Buat Reservasi';
 $aktif = 'user/reservasi.php';
 require __DIR__ . '/../includes/panel_start.php';
 ?>
-<h1 class="font-serif text-3xl font-bold text-klinik">Buat reservasi</h1>
+<h1 class="font-serif text-4xl font-bold">Buat reservasi</h1>
 
-<nav class="mt-3 text-[13px] font-semibold text-ink/60">
-  <a class="<?= $langkah === 1 ? 'text-bata' : 'underline' ?>" href="<?= e(url('user/reservasi.php')) ?>">1 Poli</a>
-  <span class="mx-2">/</span>
-  <?php if ($langkah >= 2): ?>
-    <a class="<?= $langkah === 2 ? 'text-bata' : 'underline' ?>" href="<?= e(url('user/reservasi.php?poli=' . $poliId)) ?>">2 Dokter</a>
-  <?php else: ?>
-    <span>2 Dokter</span>
-  <?php endif; ?>
-  <span class="mx-2">/</span>
-  <span class="<?= $langkah === 3 ? 'text-bata' : '' ?>">3 Tanggal</span>
-</nav>
+<?php $namaLangkah = [1 => 'Pilih poli', 2 => 'Pilih dokter', 3 => 'Pilih tanggal']; ?>
+<ol class="langkah-pesan mt-5" aria-label="Langkah reservasi">
+  <?php foreach ($namaLangkah as $no => $nama):
+      $kelas = $no < $langkah ? 'is-selesai' : ($no === $langkah ? 'is-aktif' : '');
+      $tautan = $no === 1 ? url('user/reservasi.php') : ($no === 2 && $langkah > 2 ? url('user/reservasi.php?poli=' . $poliId) : null); ?>
+    <li class="<?= $kelas ?>"<?= $no === $langkah ? ' aria-current="step"' : '' ?>>
+      <span class="langkah-pesan__no"><?= $no ?></span>
+      <?php if ($tautan && $no < $langkah): ?>
+        <a href="<?= e($tautan) ?>"><?= e($nama) ?></a>
+      <?php else: ?>
+        <span><?= e($nama) ?></span>
+      <?php endif; ?>
+    </li>
+  <?php endforeach; ?>
+</ol>
 
 <?php if ($langkah === 1): ?>
-  <p class="mt-4 text-sm text-ink/70">Pilih poli yang Anda tuju.</p>
-  <div class="mt-4 border border-garis bg-white">
+  <div class="pilih-poli mt-6">
     <?php foreach ($poliList as $p): ?>
-      <a class="flex items-center justify-between gap-4 border-b border-garis px-4 py-3 last:border-b-0 hover:bg-paper"
-         href="<?= e(url('user/reservasi.php?poli=' . (int) $p['id'])) ?>">
-        <span>
-          <span class="block font-medium">Poli <?= e($p['nama_poli']) ?></span>
-          <span class="block text-xs text-ink/60"><?= e($p['deskripsi']) ?></span>
+      <a class="pilih-poli__kartu <?= kelas_poli($p['nama_poli']) ?>" href="<?= e(url('user/reservasi.php?poli=' . (int) $p['id'])) ?>">
+        <span class="pilih-poli__ikon"><?= ikon_poli($p['nama_poli']) ?></span>
+        <span class="min-w-0">
+          <span class="block text-lg font-bold">Poli <?= e($p['nama_poli']) ?></span>
+          <span class="block text-sm text-ink/70"><?= e($p['deskripsi']) ?></span>
+          <span class="mt-1 block text-sm font-semibold text-klinik"><?= (int) $p['jml_dokter'] ?> dokter praktik</span>
         </span>
-        <span class="font-mono text-xs text-ink/60"><?= (int) $p['jml_dokter'] ?> dokter</span>
       </a>
     <?php endforeach; ?>
     <?php if (!$poliList): ?>
-      <p class="px-4 py-4 text-sm text-ink/60">Belum ada poli dengan jadwal praktik yang tersedia.</p>
+      <p class="text-ink/70">Belum ada poli dengan jadwal praktik yang tersedia.</p>
     <?php endif; ?>
   </div>
 
 <?php elseif ($langkah === 2): ?>
-  <p class="mt-4 text-sm text-ink/70">Pilih dokter di Poli <?= e($poliAktif['nama_poli']) ?>.</p>
-  <div class="mt-4 border border-garis bg-white">
-    <?php foreach ($dokterList as $d): ?>
-      <a class="block border-b border-garis px-4 py-3 last:border-b-0 hover:bg-paper"
-         href="<?= e(url('user/reservasi.php?poli=' . $poliId . '&dokter=' . (int) $d['id'])) ?>">
-        <span class="block font-medium"><?= e($d['nama']) ?></span>
-        <span class="block text-xs text-ink/60"><?= e($d['bio']) ?></span>
-        <span class="mt-1 block font-mono text-xs text-klinik">
-          Praktik: <?= e(implode(', ', isset($hariDokter[$d['id']]) ? $hariDokter[$d['id']] : [])) ?>
-        </span>
+  <div class="mt-6 flex items-center gap-3"><?= tanda_poli_html($poliAktif['nama_poli']) ?></div>
+  <div class="papan-jadwal mt-3">
+    <?php $singkat = ['Senin' => 'Sen', 'Selasa' => 'Sel', 'Rabu' => 'Rab', 'Kamis' => 'Kam', 'Jumat' => 'Jum', 'Sabtu' => 'Sab', 'Minggu' => 'Min']; ?>
+    <?php foreach ($dokterList as $d): $hariD = isset($hariDokter[$d['id']]) ? $hariDokter[$d['id']] : []; ?>
+      <a class="papan-jadwal__baris papan-jadwal__baris--tautan" href="<?= e(url('user/reservasi.php?poli=' . $poliId . '&dokter=' . (int) $d['id'])) ?>">
+        <div>
+          <p class="text-lg font-bold"><?= e($d['nama']) ?></p>
+          <p class="text-sm text-ink/70"><?= e($d['bio']) ?></p>
+        </div>
+        <ol class="papan-jadwal__hari <?= kelas_poli($poliAktif['nama_poli']) ?>" aria-label="Hari praktik">
+          <?php foreach (daftar_hari() as $h): $ada = in_array($h, $hariD, true); ?>
+            <li class="<?= $ada ? 'is-praktik' : '' ?>"><?= e($singkat[$h]) ?><span class="sr-only"><?= $ada ? ' praktik' : ' libur' ?></span></li>
+          <?php endforeach; ?>
+        </ol>
       </a>
     <?php endforeach; ?>
     <?php if (!$dokterList): ?>
-      <p class="px-4 py-4 text-sm text-ink/60">Belum ada dokter dengan jadwal aktif di poli ini.</p>
+      <p class="py-4 text-ink/70">Belum ada dokter dengan jadwal aktif di poli ini.</p>
     <?php endif; ?>
   </div>
 
@@ -245,7 +252,7 @@ require __DIR__ . '/../includes/panel_start.php';
                   <input type="hidden" name="tanggal" value="<?= e($s['tanggal']) ?>">
                   <input type="hidden" name="poli" value="<?= (int) $poliId ?>">
                   <input type="hidden" name="dokter" value="<?= (int) $dokterId ?>">
-                  <button class="bg-klinik px-3 py-1 text-xs font-medium text-white hover:bg-ink">Pesan</button>
+                  <button class="bg-klinik px-4 py-2 text-sm font-semibold text-white">Pesan nomor</button>
                 </form>
               <?php endif; ?>
             </td>

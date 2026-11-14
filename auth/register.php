@@ -68,13 +68,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$kelasInput = 'mt-1 w-full border border-garis bg-white px-3 py-2 text-sm focus:border-klinik focus:outline-none focus:ring-1 focus:ring-klinik';
+$kelasInput = 'mt-1 w-full border border-garis bg-white px-3 py-2.5 text-base focus:border-klinik focus:outline-none focus:ring-1 focus:ring-klinik';
 $judul = 'Daftar Pasien';
 require __DIR__ . '/../includes/header.php';
+require __DIR__ . '/../includes/public_nav.php';
 ?>
 <main class="mx-auto w-full max-w-md flex-1 px-4 py-12">
-  <p class="text-[13px] font-semibold text-ink/60">Pendaftaran pasien</p>
-  <h1 class="mt-2 font-serif text-3xl font-bold text-klinik">Buat akun pasien</h1>
+  <h1 class="font-serif text-4xl font-bold">Buat akun pasien</h1>
+  <p class="mt-2 text-ink/75">Setelah mendaftar, Anda bisa langsung mengambil nomor antrean.</p>
   <div class="mt-6 border border-garis bg-white p-6">
     <?php if (isset($err['umum'])): ?>
       <div class="mb-4 border border-bata bg-bata/10 px-3 py-2 text-sm text-bata"><?= e($err['umum']) ?></div>

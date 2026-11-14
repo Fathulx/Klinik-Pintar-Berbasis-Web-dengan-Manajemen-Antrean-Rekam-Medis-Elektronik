@@ -1643,3 +1643,242 @@ h2.font-serif,
 h3.font-serif {
   word-spacing: 0.05em;
 }
+
+/* semua judul halaman berwarna tinta, sama di setiap peran */
+h1.font-serif {
+  color: var(--tinta);
+}
+
+/* ---------- Reservasi: langkah, kartu poli ---------- */
+.langkah-pesan {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: rgb(18 41 59 / 55%);
+  font-weight: 600;
+}
+
+.langkah-pesan li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.langkah-pesan__no {
+  display: inline-grid;
+  width: 1.8rem;
+  height: 1.8rem;
+  place-items: center;
+  border: 1.5px solid var(--garis);
+  border-radius: 50%;
+  background: #fff;
+  font-family: "Barlow Semi Condensed", sans-serif;
+  font-weight: 700;
+}
+
+.langkah-pesan li.is-aktif {
+  color: var(--petunjuk);
+}
+
+.langkah-pesan li.is-aktif .langkah-pesan__no {
+  border-color: var(--petunjuk);
+  background: var(--petunjuk);
+  color: #fff;
+}
+
+.langkah-pesan li.is-selesai {
+  color: var(--tinta);
+}
+
+.langkah-pesan li.is-selesai .langkah-pesan__no {
+  border-color: var(--mint-garis);
+  background: var(--mint);
+  color: var(--mint-tinta);
+}
+
+.langkah-pesan a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.pilih-poli {
+  display: grid;
+  gap: 0.9rem;
+}
+
+@media (min-width: 768px) {
+  .pilih-poli {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.pilih-poli__kartu {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  border: 1px solid transparent;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: var(--bayang);
+  padding: 1.1rem 1.2rem;
+  color: var(--tinta);
+  text-decoration: none;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.pilih-poli__kartu:hover {
+  border-color: var(--warna-poli);
+}
+
+@media (hover: hover) {
+  .pilih-poli__kartu:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.pilih-poli__ikon {
+  display: inline-grid;
+  width: 3rem;
+  height: 3rem;
+  flex: none;
+  place-items: center;
+  border-radius: 0.9rem;
+  background: var(--warna-poli);
+  color: #fff;
+}
+
+.pilih-poli__ikon .ikon {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.papan-jadwal__baris--tautan {
+  color: var(--tinta);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: background-color 140ms ease;
+}
+
+.papan-jadwal__baris--tautan:hover {
+  background: rgb(255 255 255 / 70%);
+}
+
+/* ---------- Ringkasan dashboard: satu angka utama, sisanya ringkas ---------- */
+.ringkasan {
+  display: grid;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: var(--bayang);
+}
+
+@media (min-width: 900px) {
+  .ringkasan {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+}
+
+.ringkasan__utama {
+  padding: 1.4rem 1.5rem;
+  background: var(--mint);
+}
+
+.ringkasan__label {
+  color: var(--mint-tinta);
+  font-weight: 650;
+}
+
+.ringkasan__angka {
+  margin: 0.1rem 0 0.35rem;
+  color: var(--tinta);
+  font-family: "Barlow Semi Condensed", sans-serif;
+  font-size: 4.5rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ringkasan__lain {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .ringkasan__lain {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.ringkasan__lain > div {
+  border-top: 1px solid var(--garis);
+  border-left: 1px solid var(--garis);
+  padding: 1rem 1.15rem;
+}
+
+.ringkasan__lain dt {
+  color: rgb(18 41 59 / 62%);
+  font-size: 0.85rem;
+}
+
+.ringkasan__lain dd {
+  margin: 0.15rem 0 0;
+  font-family: "Barlow Semi Condensed", sans-serif;
+  font-size: 2rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+/* garis keterisian kuota */
+.meter-kuota {
+  display: block;
+  width: 6rem;
+  height: 0.35rem;
+  margin-top: 0.3rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: #E3EAEE;
+}
+
+.meter-kuota > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--petunjuk);
+}
+
+/* dashboard dokter: bagian utama memakai layar biru tua seperti ruang periksa */
+.ringkasan__utama.layar-periksa {
+  background: var(--layar);
+  color: #fff;
+}
+
+.layar-periksa .ringkasan__label {
+  color: rgb(255 255 255 / 75%);
+}
+
+.layar-periksa .ringkasan__angka {
+  color: var(--panggil);
+}
+
+button[class*="bg-panggil"],
+a[class*="bg-panggil"] {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  border: 0;
+  border-radius: 0.65rem;
+  background: var(--panggil);
+  color: var(--layar);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button[class*="bg-panggil"]:hover,
+a[class*="bg-panggil"]:hover {
+  background: #FFC926;
+}

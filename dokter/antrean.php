@@ -121,7 +121,7 @@ require __DIR__ . '/../includes/panel_start.php';
     <tbody>
       <?php foreach ($baris as $r): ?>
         <tr class="border-t border-garis" data-reservasi="<?= (int) $r['id'] ?>" data-status="<?= e($r['status']) ?>">
-          <td data-label="Nomor" class="px-3 py-2 font-mono font-semibold text-bata"><?= e(kode_antrean($r['nama_poli'], $r['no_antrean'])) ?></td>
+          <td data-label="Nomor" class="px-3 py-2 font-mono text-lg font-bold text-klinik"><?= e(kode_antrean($r['nama_poli'], $r['no_antrean'])) ?></td>
           <td data-label="Pasien" class="px-3 py-2">
             <?= e($r['pasien']) ?>
             <?php if ($r['tanggal'] !== $hariIni): ?>
@@ -139,7 +139,7 @@ require __DIR__ . '/../includes/panel_start.php';
                 <button class="bg-klinik px-3 py-1 text-xs font-medium text-white hover:bg-ink">Panggil</button>
               </form>
             <?php elseif ($r['status'] === 'diperiksa'): ?>
-              <a class="bg-bata px-3 py-1 text-xs font-medium text-white hover:bg-ink"
+              <a class="bg-klinik px-3 py-1 text-xs font-medium text-white"
                  href="<?= e(url('dokter/periksa.php?id=' . (int) $r['id'])) ?>">Isi pemeriksaan</a>
               <form method="post" class="ml-2 inline"
                     onsubmit="return confirm('Pasien sudah dipanggil tetapi tidak masuk? Tandai tidak datang agar antrean berlanjut.')">

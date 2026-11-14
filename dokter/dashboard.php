@@ -54,42 +54,39 @@ $judul = 'Dashboard Dokter';
 $aktif = 'dokter/dashboard.php';
 require __DIR__ . '/../includes/panel_start.php';
 ?>
-<h1 class="font-serif text-3xl font-bold text-klinik">Selamat bertugas, <?= e($user['nama']) ?></h1>
-<p class="mt-1 text-sm text-ink/70"><?= e(tanggal_indonesia($hariIni)) ?></p>
+<h1 class="font-serif text-4xl font-bold">Selamat bertugas, <?= e($user['nama']) ?></h1>
+<p class="mt-1 text-ink/70"><?= e(tanggal_indonesia($hariIni)) ?></p>
 
-<dl class="stat-grid mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-  <?php foreach (['menunggu' => 'Belum hadir', 'hadir' => 'Hadir', 'diperiksa' => 'Diperiksa', 'selesai' => 'Selesai'] as $k => $nama): ?>
-    <div class="bg-white p-4">
-      <dt class="text-[13px] font-semibold text-ink/60"><?= e($nama) ?> hari ini</dt>
-      <dd class="mt-1 font-mono text-3xl font-semibold text-klinik"><?= isset($hitung[$k]) ? $hitung[$k] : 0 ?></dd>
-    </div>
-  <?php endforeach; ?>
-</dl>
-
-<section class="mt-8 border border-garis bg-white p-5">
-  <?php if ($sedang): ?>
-    <p class="text-[13px] font-semibold text-ink/60">Sedang diperiksa</p>
-    <p class="mt-1 font-serif text-2xl font-bold">
-      <span class="font-mono text-bata"><?= e(kode_antrean($sedang['nama_poli'], $sedang['no_antrean'])) ?></span>
-      <?= e($sedang['pasien']) ?>
-    </p>
-    <a class="mt-3 inline-block bg-bata px-4 py-2 text-sm font-medium text-white hover:bg-ink"
-       href="<?= e(url('dokter/periksa.php?id=' . (int) $sedang['id'])) ?>">Lanjutkan pemeriksaan</a>
-  <?php elseif ($berikut): ?>
-    <p class="text-[13px] font-semibold text-ink/60">Pasien berikutnya (sudah hadir)</p>
-    <p class="mt-1 font-serif text-2xl font-bold">
-      <span class="font-mono text-bata"><?= e(kode_antrean($berikut['nama_poli'], $berikut['no_antrean'])) ?></span>
-      <?= e($berikut['pasien']) ?>
-    </p>
-    <a class="mt-3 inline-block bg-klinik px-4 py-2 text-sm font-medium text-white hover:bg-ink"
-       href="<?= e(url('dokter/antrean.php')) ?>">Buka antrean untuk memanggil</a>
-  <?php else: ?>
-    <p class="text-sm text-ink/70">Belum ada pasien yang hadir. Antrean akan muncul setelah Admin mengonfirmasi kedatangan.</p>
-  <?php endif; ?>
+<section class="ringkasan mt-6" aria-label="Ruang periksa">
+  <?php $pasienUtama = $sedang ?: $berikut; ?>
+  <div class="ringkasan__utama layar-periksa">
+    <?php if ($pasienUtama): ?>
+      <p class="ringkasan__label"><?= $sedang ? 'Sedang diperiksa' : 'Pasien berikutnya, sudah hadir' ?></p>
+      <p class="ringkasan__angka"><?= e(kode_antrean($pasienUtama['nama_poli'], $pasienUtama['no_antrean'])) ?></p>
+      <p class="text-lg font-semibold"><?= e($pasienUtama['pasien']) ?></p>
+      <?php if ($sedang): ?>
+        <a class="mt-4 inline-flex bg-panggil px-4 py-2.5 font-semibold text-layar"
+           href="<?= e(url('dokter/periksa.php?id=' . (int) $sedang['id'])) ?>">Lanjutkan pemeriksaan</a>
+      <?php else: ?>
+        <form method="post" action="<?= e(url('dokter/antrean.php')) ?>" class="mt-4">
+          <?= csrf_field() ?>
+          <input type="hidden" name="aksi" value="panggil">
+          <input type="hidden" name="id" value="<?= (int) $berikut['id'] ?>">
+          <button class="bg-panggil px-4 py-2.5 font-semibold text-layar">Panggil sekarang</button>
+        </form>
+      <?php endif; ?>
+    <?php else: ?>
+      <p class="ringkasan__label">Belum ada pasien yang hadir</p>
+      <p class="mt-2 max-w-xs text-white/80">Pasien muncul di sini setelah petugas mengonfirmasi kedatangannya.</p>
+    <?php endif; ?>
+  </div>
+  <dl class="ringkasan__lain">
+    <div><dt>Belum hadir</dt><dd><?= isset($hitung['menunggu']) ? $hitung['menunggu'] : 0 ?></dd></div>
+    <div><dt>Hadir, menunggu dipanggil</dt><dd><?= isset($hitung['hadir']) ? $hitung['hadir'] : 0 ?></dd></div>
+    <div><dt>Selesai hari ini</dt><dd><?= isset($hitung['selesai']) ? $hitung['selesai'] : 0 ?></dd></div>
+    <div><dt>Selesai bulan ini</dt><dd><?= (int) $selesai['bulan_ini'] ?></dd></div>
+    <div><dt>Total diperiksa</dt><dd><?= (int) $selesai['total'] ?></dd></div>
+    <div><dt>Antrean lengkap</dt><dd class="!font-sans !text-base"><a class="font-semibold text-klinik underline" href="<?= e(url('dokter/antrean.php')) ?>">Buka antrean hari ini</a></dd></div>
+  </dl>
 </section>
-
-<p class="mt-6 text-sm text-ink/70">
-  Pasien selesai diperiksa: <span class="font-mono"><?= (int) $selesai['bulan_ini'] ?></span> bulan ini,
-  <span class="font-mono"><?= (int) $selesai['total'] ?></span> keseluruhan.
-</p>
 <?php require __DIR__ . '/../includes/panel_end.php'; ?>

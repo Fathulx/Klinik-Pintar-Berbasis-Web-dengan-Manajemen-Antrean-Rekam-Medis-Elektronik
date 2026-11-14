@@ -60,25 +60,29 @@ $judul = 'Dashboard Admin';
 $aktif = 'admin/dashboard.php';
 require __DIR__ . '/../includes/panel_start.php';
 ?>
-<h1 class="font-serif text-3xl font-bold text-klinik">Dashboard</h1>
-<p class="mt-1 text-sm text-ink/70"><?= e(tanggal_indonesia($hariIni)) ?></p>
+<h1 class="font-serif text-4xl font-bold">Dashboard</h1>
+<p class="mt-1 text-ink/70"><?= e(tanggal_indonesia($hariIni)) ?></p>
 
-<dl class="stat-grid mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-  <?php foreach (['Antrean hari ini' => 'total', 'Belum hadir' => 'menunggu', 'Hadir atau diperiksa' => 'hadir', 'Selesai' => 'selesai'] as $nama => $k): ?>
-    <div class="bg-white p-4">
-      <dt class="text-[13px] font-semibold text-ink/60"><?= e($nama) ?></dt>
-      <dd class="mt-1 font-mono text-3xl font-semibold text-klinik"><?= (int) $hari[$k] ?></dd>
-    </div>
-  <?php endforeach; ?>
-</dl>
-<p class="mt-2 text-xs text-ink/60">
-  <?= (int) $jml['dokter'] ?> dokter aktif &middot; <?= (int) $jml['poli'] ?> poli &middot; <?= (int) $jml['pasien'] ?> pasien terdaftar
-  &middot; <a class="underline" href="<?= e(url('admin/antrean.php')) ?>">Kelola antrean hari ini</a>
-</p>
+<section class="ringkasan mt-6" aria-label="Ringkasan antrean hari ini">
+  <div class="ringkasan__utama">
+    <p class="ringkasan__label">Belum hadir hari ini</p>
+    <p class="ringkasan__angka"><?= (int) $hari['menunggu'] ?></p>
+    <p class="max-w-xs text-sm text-ink/70">Pasien yang sudah memesan tetapi kedatangannya belum dikonfirmasi.</p>
+    <a class="mt-4 inline-flex bg-klinik px-4 py-2.5 font-semibold text-white" href="<?= e(url('admin/antrean.php')) ?>">Buka antrean hari ini</a>
+  </div>
+  <dl class="ringkasan__lain">
+    <div><dt>Total antrean</dt><dd><?= (int) $hari['total'] ?></dd></div>
+    <div><dt>Hadir atau diperiksa</dt><dd><?= (int) $hari['hadir'] ?></dd></div>
+    <div><dt>Selesai</dt><dd><?= (int) $hari['selesai'] ?></dd></div>
+    <div><dt>Dokter aktif</dt><dd><?= (int) $jml['dokter'] ?></dd></div>
+    <div><dt>Poli</dt><dd><?= (int) $jml['poli'] ?></dd></div>
+    <div><dt>Pasien terdaftar</dt><dd><?= (int) $jml['pasien'] ?></dd></div>
+  </dl>
+</section>
 
 <div class="mt-10 grid gap-10 lg:grid-cols-2">
   <section>
-    <h2 class="font-serif text-xl font-bold">Reservasi 7 hari terakhir</h2>
+    <h2 class="font-serif text-2xl font-bold">Reservasi 7 hari terakhir</h2>
     <?php $totalPekan = array_sum(array_column($deret, 'n')); ?>
     <div class="relative mt-4 flex h-44 items-end gap-2 border-b border-garis">
       <?php if ($totalPekan === 0): ?>
@@ -90,7 +94,7 @@ require __DIR__ . '/../includes/panel_start.php';
         <div class="flex h-full flex-1 flex-col items-center justify-end"
              title="<?= e(tanggal_indonesia($d['tgl'])) ?>: <?= (int) $d['n'] ?> reservasi">
           <span class="mb-1 font-mono text-xs <?= $d['n'] > 0 ? '' : 'text-ink/30' ?>"><?= (int) $d['n'] ?></span>
-          <div class="w-full <?= $hariIniBar ? 'bg-bata' : 'bg-klinik' ?>"
+          <div class="w-full rounded-t-md <?= $hariIniBar ? 'bg-panggil' : 'bg-klinik/85' ?>"
                style="height: <?= $d['n'] > 0 ? max(4, (int) round($d['n'] / $maks * 100)) : 2 ?>%"></div>
         </div>
       <?php endforeach; ?>
@@ -103,7 +107,7 @@ require __DIR__ . '/../includes/panel_start.php';
   </section>
 
   <section>
-    <h2 class="font-serif text-xl font-bold">Praktik hari ini</h2>
+    <h2 class="font-serif text-2xl font-bold">Praktik hari ini</h2>
     <div class="mt-3 overflow-x-auto">
       <table class="responsive-table w-full border border-garis bg-white text-left text-sm">
         <thead class="bg-paper text-[13px] font-semibold text-ink/60">
@@ -112,9 +116,12 @@ require __DIR__ . '/../includes/panel_start.php';
         <tbody>
           <?php foreach ($praktik as $p): ?>
             <tr class="border-t border-garis">
-              <td data-label="Dokter" class="px-3 py-2"><?= e($p['nama']) ?><span class="block text-xs text-ink/60">Poli <?= e($p['nama_poli']) ?></span></td>
+              <td data-label="Dokter" class="px-3 py-2.5"><?= tanda_poli_html($p['nama_poli']) ?><span class="mt-0.5 block font-semibold"><?= e($p['nama']) ?></span></td>
               <td data-label="Jam" class="whitespace-nowrap px-3 py-2 font-mono text-xs"><?= e($p['jam_mulai']) ?> - <?= e($p['jam_selesai']) ?></td>
-              <td data-label="Terisi" class="px-3 py-2 font-mono"><?= (int) $p['terisi'] ?>/<?= (int) $p['kuota'] ?></td>
+              <td data-label="Terisi" class="px-3 py-2.5">
+                <span class="font-mono font-semibold"><?= (int) $p['terisi'] ?>/<?= (int) $p['kuota'] ?></span>
+                <span class="meter-kuota" aria-hidden="true"><span style="width: <?= min(100, (int) round($p['terisi'] / max(1, $p['kuota']) * 100)) ?>%"></span></span>
+              </td>
             </tr>
           <?php endforeach; ?>
           <?php if (!$praktik): ?>

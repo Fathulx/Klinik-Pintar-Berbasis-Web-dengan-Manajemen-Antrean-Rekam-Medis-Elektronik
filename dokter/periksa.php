@@ -179,7 +179,7 @@ require __DIR__ . '/../includes/panel_start.php';
 <div class="mt-4 flex flex-wrap items-start gap-6 border border-garis bg-white p-5">
   <div>
     <p class="text-[13px] font-semibold text-ink/60">Nomor antrean</p>
-    <p class="font-mono text-4xl font-semibold text-bata"><?= e(kode_antrean($r['nama_poli'], $r['no_antrean'])) ?></p>
+    <p class="font-mono text-5xl font-bold text-klinik"><?= e(kode_antrean($r['nama_poli'], $r['no_antrean'])) ?></p>
   </div>
   <div>
     <p class="font-serif text-2xl font-bold"><?= e($r['pasien']) ?></p>
