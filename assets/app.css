@@ -481,6 +481,49 @@ tbody tr:hover {
   outline-offset: 2px;
 }
 
+/* Pesan sesudah aksi (lihat assets/tombol.js) */
+.flash {
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.flash--tutup {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.flash .flash__tutup,
+.flash .flash__tutup:hover:not(:disabled),
+.flash .flash__tutup:active {
+  min-height: 0;
+  margin: -0.15rem -0.25rem -0.15rem 0;
+  border: 0;
+  border-radius: 0.4rem;
+  background: transparent;
+  box-shadow: none;
+  padding: 0 0.4rem;
+  color: inherit;
+  font-size: 1.15rem;
+  line-height: 1.4;
+  transform: none;
+  opacity: 0.7;
+}
+
+.flash .flash__tutup:hover:not(:disabled) {
+  opacity: 1;
+  background: rgb(255 255 255 / 55%);
+}
+
+/* Antrean admin: baris yang baru masuk atau berubah status */
+@keyframes baris-baru {
+  from { background-color: rgb(217 88 43 / 18%); }
+  to { background-color: transparent; }
+}
+
+tr.baris-baru,
+tr.baris-baru > td {
+  animation: baris-baru 2.4s ease-out;
+}
+
 /* Baris filter: kolom isian dan tombol di sebelahnya sama tinggi */
 .filter-bar input,
 .filter-bar select,

@@ -1,4 +1,9 @@
 <?php
+// pengambilan ulang otomatis (assets/antrean_langsung.js) tidak boleh membuat
+// sesi tetap hidup ketika admin meninggalkan komputernya
+if (isset($_SERVER['HTTP_X_ANTREAN_LANGSUNG'])) {
+    define('SESI_TANPA_PERPANJANG', true);
+}
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/antrean.php';
 require_once __DIR__ . '/../includes/notifikasi.php';
@@ -92,8 +97,13 @@ require __DIR__ . '/../includes/panel_start.php';
 
 <?php if ($tanggal !== $hariIni): ?>
   <p class="mt-3 text-xs text-ink/60">Status kehadiran hanya dapat diubah pada hari kunjungan.</p>
+<?php else: ?>
+  <p id="antrean-langsung-ket" class="mt-3 text-xs text-ink/60" aria-live="polite">
+    Daftar ini diperbarui otomatis setiap 10 detik.
+  </p>
 <?php endif; ?>
 
+<div id="daftar-antrean" data-langsung="<?= $tanggal === $hariIni ? '1' : '0' ?>">
 <?php foreach ($grup as $g): ?>
   <?php $hitung = array_count_values(array_column($g['baris'], 'status')); ?>
   <section class="mt-8">
@@ -115,7 +125,7 @@ require __DIR__ . '/../includes/panel_start.php';
         </thead>
         <tbody>
           <?php foreach ($g['baris'] as $r): ?>
-            <tr class="border-t border-garis">
+            <tr class="border-t border-garis" data-reservasi="<?= (int) $r['id'] ?>" data-status="<?= e($r['status']) ?>">
               <td data-label="Nomor" class="px-3 py-2 font-mono font-semibold text-bata"><?= e(kode_antrean($r['nama_poli'], $r['no_antrean'])) ?></td>
               <td data-label="Pasien" class="px-3 py-2"><?= e($r['pasien']) ?></td>
               <td data-label="Status" class="px-3 py-2"><?= badge_reservasi($r['status']) ?></td>
@@ -149,5 +159,9 @@ require __DIR__ . '/../includes/panel_start.php';
 
 <?php if (!$grup): ?>
   <p class="mt-8 text-sm text-ink/70">Tidak ada reservasi pada tanggal ini. Pilih tanggal lain, atau periksa <a class="text-klinik underline" href="<?= e(url('admin/jadwal.php')) ?>">jadwal praktik</a> bila pasien belum bisa memesan.</p>
+<?php endif; ?>
+</div>
+<?php if ($tanggal === $hariIni): ?>
+  <script src="<?= e(url('assets/antrean_langsung.js?v=' . filemtime(__DIR__ . '/../assets/antrean_langsung.js'))) ?>" defer></script>
 <?php endif; ?>
 <?php require __DIR__ . '/../includes/panel_end.php'; ?>

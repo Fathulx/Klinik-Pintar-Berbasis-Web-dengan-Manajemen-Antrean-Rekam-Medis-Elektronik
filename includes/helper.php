@@ -44,8 +44,10 @@ function tampil_flash()
     $kelas = $f['tipe'] === 'error'
         ? 'border-bata bg-bata/10 text-bata'
         : 'border-klinik bg-klinik/10 text-klinik';
-    return '<div class="mb-4 rounded-xl border px-3 py-2.5 text-sm ' . $kelas . '">'
-        . e($f['pesan']) . '</div>';
+    // assets/tombol.js menambahkan tombol tutup; pesan berhasil hilang sendiri
+    return '<div class="flash mb-4 flex items-start gap-3 rounded-xl border px-3 py-2.5 text-sm ' . $kelas . '"'
+        . ' role="' . ($f['tipe'] === 'error' ? 'alert' : 'status') . '" data-tipe="' . e($f['tipe']) . '">'
+        . '<span class="flex-1">' . e($f['pesan']) . '</span></div>';
 }
 
 function pesan_field($err, $kunci)
