@@ -230,6 +230,50 @@ function teks_sisa_antrean($n)
     return $n === 0 ? 'Anda pasien berikutnya' : "$n pasien lagi sebelum Anda";
 }
 
+// Teks dan nyala karcis dari status reservasi. Kembarannya di
+// assets/notifikasi.js (keadaanKarcis) agar karcis bisa berubah tanpa refresh.
+function keadaan_karcis($status, $diDepan, $batas, $hariIni)
+{
+    $akhir = [
+        'tidak_hadir' => 'Anda ditandai tidak hadir',
+        'selesai'     => 'Pemeriksaan selesai',
+        'batal'       => 'Reservasi dibatalkan',
+    ];
+    if (isset($akhir[$status])) {
+        return ['teks' => $akhir[$status], 'dekat' => false, 'lewat' => true];
+    }
+    if ($status === 'diperiksa') {
+        return ['teks' => 'Silakan masuk ke ruang periksa', 'dekat' => true, 'lewat' => false];
+    }
+    return [
+        'teks'  => teks_sisa_antrean($diDepan),
+        'dekat' => $hariIni && (int) $diDepan <= (int) $batas,
+        'lewat' => false,
+    ];
+}
+
+// Status terkini semua reservasi pasien hari ini dan seterusnya (termasuk
+// yang baru selesai/tidak hadir), untuk pembaruan langsung karcis.
+function antrean_pasien_terkini(PDO $pdo, $pasienId, $hariIni)
+{
+    $st = $pdo->prepare(
+        "SELECT r.id, r.status,
+                (SELECT COUNT(*) FROM reservasi r2
+                  WHERE r2.jadwal_id = r.jadwal_id AND r2.tanggal = r.tanggal
+                    AND r2.no_antrean < r.no_antrean
+                    AND r2.status IN ('menunggu', 'hadir', 'diperiksa')) AS di_depan
+         FROM reservasi r
+         WHERE r.pasien_id = ? AND r.tanggal >= ?
+         ORDER BY r.tanggal, r.id LIMIT 50"
+    );
+    $st->execute([(int) $pasienId, $hariIni]);
+    $hasil = [];
+    foreach ($st->fetchAll() as $r) {
+        $hasil[] = ['id' => (int) $r['id'], 'status' => $r['status'], 'di_depan' => (int) $r['di_depan']];
+    }
+    return $hasil;
+}
+
 // Kunci warna poli (lihat assets/app.css .poli--*): Umum, Gigi, Anak, Dalam.
 function kelas_poli($namaPoli)
 {
@@ -260,35 +304,28 @@ function karcis_html($r)
     $menunggu = in_array($r['status'], ['menunggu', 'hadir'], true);
     $hariIni  = $r['tanggal'] === date('Y-m-d');
     $batas    = defined('NOTIF_ANTREAN_SISA') ? (int) NOTIF_ANTREAN_SISA : 3;
-    $dekat    = ($menunggu && $hariIni && (int) $r['di_depan'] <= $batas) || $r['status'] === 'diperiksa';
+    $k        = keadaan_karcis($r['status'], (int) $r['di_depan'], $batas, $hariIni);
     ob_start();
     ?>
-    <div class="karcis <?= $dekat ? 'karcis--dekat' : '' ?> <?= $menunggu || $r['status'] === 'diperiksa' ? '' : 'karcis--lewat' ?>"
-         data-karcis="<?= $id ?>" data-hari-ini="<?= $hariIni ? '1' : '0' ?>" data-batas-dekat="<?= $batas ?>">
+    <div class="karcis <?= $k['dekat'] ? 'karcis--dekat' : '' ?> <?= $k['lewat'] ? 'karcis--lewat' : '' ?>"
+         data-karcis="<?= $id ?>" data-status="<?= e($r['status']) ?>"
+         data-hari-ini="<?= $hariIni ? '1' : '0' ?>" data-batas-dekat="<?= $batas ?>">
       <div class="karcis__layar">
         <div class="karcis__kepala">
           <span>Nomor antrean Anda</span>
           <?= tanda_poli_html($r['nama_poli']) ?>
         </div>
         <p class="karcis__nomor"><?= e($kode) ?></p>
-        <?php if ($r['status'] === 'diperiksa'): ?>
-          <p class="karcis__sisa">Silakan masuk ke ruang periksa</p>
-        <?php elseif ($menunggu): ?>
-          <p class="karcis__sisa" data-sisa="<?= $id ?>"><?= e(teks_sisa_antrean($r['di_depan'])) ?></p>
-          <span hidden data-di-depan="<?= $id ?>"><?= (int) $r['di_depan'] ?></span>
-        <?php else: ?>
-          <p class="karcis__sisa"><?= e(label_reservasi($r['status'])) ?></p>
-        <?php endif; ?>
+        <p class="karcis__sisa" data-sisa="<?= $id ?>" aria-live="polite"><?= e($k['teks']) ?></p>
+        <span hidden data-di-depan="<?= $id ?>"><?= (int) $r['di_depan'] ?></span>
       </div>
       <div class="karcis__sobek" aria-hidden="true"></div>
       <dl class="karcis__rincian">
         <div><dt>Dokter</dt><dd><?= e($r['dokter']) ?></dd></div>
         <div><dt>Tanggal</dt><dd><?= e(tanggal_indonesia($r['tanggal'])) ?></dd></div>
         <div><dt>Jam praktik</dt><dd class="font-mono"><?= e($r['jam_mulai']) ?>-<?= e($r['jam_selesai']) ?></dd></div>
-        <?php if ($menunggu): ?>
-          <div><dt>Perkiraan dilayani</dt><dd class="font-mono">± <?= e(perkiraan_jam($r['jam_mulai'], (int) $r['di_depan'])) ?></dd></div>
-        <?php endif; ?>
-        <div><dt>Status</dt><dd><?= badge_reservasi($r['status']) ?></dd></div>
+        <div data-perkiraan<?= $menunggu ? '' : ' hidden' ?>><dt>Perkiraan dilayani</dt><dd class="font-mono">± <?= e(perkiraan_jam($r['jam_mulai'], (int) $r['di_depan'])) ?></dd></div>
+        <div><dt>Status</dt><dd data-status-label><?= badge_reservasi($r['status']) ?></dd></div>
       </dl>
     </div>
     <?php

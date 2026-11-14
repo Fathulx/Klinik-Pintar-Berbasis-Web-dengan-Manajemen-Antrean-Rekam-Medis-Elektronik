@@ -35,12 +35,9 @@ foreach (daftar_notifikasi($pdo, $user['id'], $setelah, 10) as $n) {
     ];
 }
 
-$antrean = [];
-if ($pasienId) {
-    foreach (reservasi_pasien($pdo, $pasienId, true) as $r) {
-        $antrean[] = ['id' => (int) $r['id'], 'di_depan' => (int) $r['di_depan']];
-    }
-}
+// status terkini (termasuk yang baru dipanggil, selesai, atau tidak hadir)
+// agar karcis di halaman pasien ikut berubah tanpa refresh
+$antrean = $pasienId ? antrean_pasien_terkini($pdo, $pasienId, date('Y-m-d')) : [];
 
 echo json_encode([
     'belum_dibaca' => jumlah_notif_belum_dibaca($pdo, $user['id']),

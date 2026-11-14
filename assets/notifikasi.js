@@ -1,4 +1,4 @@
-// Polling notifikasi pasien setiap 15 detik: memperbarui badge lonceng,
+// Polling notifikasi pasien setiap 8 detik: memperbarui badge lonceng,
 // menampilkan toast + bunyi + getar untuk notifikasi baru, dan memperbarui
 // jumlah pasien di depan pada karcis antrean.
 
@@ -18,8 +18,30 @@ function teksSisa(n) {
   return n === 0 ? 'Anda pasien berikutnya' : n + ' pasien lagi sebelum Anda';
 }
 
+// sama dengan keadaan_karcis() di includes/antrean.php
+function keadaanKarcis(status, diDepan, batas, hariIni) {
+  var akhir = {
+    tidak_hadir: 'Anda ditandai tidak hadir',
+    selesai: 'Pemeriksaan selesai',
+    batal: 'Reservasi dibatalkan'
+  };
+  if (akhir[status]) return { teks: akhir[status], dekat: false, lewat: true };
+  if (status === 'diperiksa') return { teks: 'Silakan masuk ke ruang periksa', dekat: true, lewat: false };
+  return { teks: teksSisa(diDepan), dekat: !!hariIni && diDepan <= batas, lewat: false };
+}
+
+// label dan warna lencana status, sama dengan badge_reservasi() di PHP
+var LENCANA = {
+  menunggu: ['Menunggu', 'status-badge--warning'],
+  hadir: ['Hadir', 'status-badge--success'],
+  diperiksa: ['Diperiksa', 'status-badge--info'],
+  selesai: ['Selesai', 'status-badge--neutral'],
+  batal: ['Dibatalkan', 'status-badge--danger'],
+  tidak_hadir: ['Tidak hadir', 'status-badge--danger']
+};
+
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { nilaiRespons: nilaiRespons, teksSisa: teksSisa };
+  module.exports = { nilaiRespons: nilaiRespons, teksSisa: teksSisa, keadaanKarcis: keadaanKarcis };
 }
 
 (function () {
@@ -32,6 +54,49 @@ if (typeof module !== 'undefined' && module.exports) {
   var badge = document.getElementById('notif-jumlah');
   var timer = null;
   var audio = null;
+
+  // Karcis berubah langsung mengikuti status dan jumlah pasien di depan:
+  // teks berganti dengan animasi, layar menyala kuning saat dekat/dipanggil,
+  // dan redup saat selesai, dibatalkan, atau ditandai tidak hadir.
+  function perbaruiKarcis(r) {
+    var karcis = document.querySelector('[data-karcis="' + r.id + '"]');
+    if (!karcis) return;
+    var k = keadaanKarcis(r.status, r.di_depan,
+      Number(karcis.getAttribute('data-batas-dekat') || 3),
+      karcis.getAttribute('data-hari-ini') === '1');
+
+    var sisa = karcis.querySelector('[data-sisa]');
+    if (sisa && sisa.textContent !== k.teks) {
+      sisa.textContent = k.teks;
+      sisa.classList.remove('berganti');
+      void sisa.offsetWidth; // mulai ulang animasi
+      sisa.classList.add('berganti');
+    }
+
+    var sebelumnyaDekat = karcis.classList.contains('karcis--dekat');
+    karcis.classList.toggle('karcis--dekat', k.dekat);
+    karcis.classList.toggle('karcis--lewat', k.lewat);
+    if (k.dekat && !sebelumnyaDekat) {
+      // kedip panggilan sekali saat baru menjadi dekat
+      var layar = karcis.querySelector('.karcis__layar');
+      if (layar) { layar.style.animation = 'none'; void layar.offsetWidth; layar.style.animation = ''; }
+    }
+
+    if (karcis.getAttribute('data-status') !== r.status) {
+      karcis.setAttribute('data-status', r.status);
+      var label = karcis.querySelector('[data-status-label]');
+      var l = LENCANA[r.status];
+      if (label && l) {
+        label.innerHTML = '';
+        var span = document.createElement('span');
+        span.className = 'status-badge ' + l[1];
+        span.textContent = l[0];
+        label.appendChild(span);
+      }
+      var perkiraan = karcis.querySelector('[data-perkiraan]');
+      if (perkiraan) perkiraan.hidden = !(r.status === 'menunggu' || r.status === 'hadir');
+    }
+  }
 
   function aturBadge(n) {
     badge.textContent = n > 99 ? '99+' : String(n);
@@ -136,24 +201,12 @@ if (typeof module !== 'undefined' && module.exports) {
         (data.antrean || []).forEach(function (r) {
           var el = document.querySelector('[data-di-depan="' + r.id + '"]');
           if (el) el.textContent = String(r.di_depan);
-          // karcis layar antrean: teks sisa dan nyala kuning saat sudah dekat
-          var sisa = document.querySelector('[data-sisa="' + r.id + '"]');
-          if (sisa && sisa.textContent !== teksSisa(r.di_depan)) {
-            sisa.textContent = teksSisa(r.di_depan);
-            // berganti seperti angka di layar antrean; hanya saat ada perubahan
-            sisa.classList.remove('berganti');
-            void sisa.offsetWidth;
-            sisa.classList.add('berganti');
-          }
-          var karcis = document.querySelector('[data-karcis="' + r.id + '"]');
-          if (karcis && karcis.getAttribute('data-hari-ini') === '1') {
-            karcis.classList.toggle('karcis--dekat', r.di_depan <= Number(karcis.getAttribute('data-batas-dekat') || 3));
-          }
+          perbaruiKarcis(r);
         });
       })
       .catch(function () { /* jaringan putus: coba lagi di putaran berikut */ });
   }
 
-  timer = setInterval(cek, 15000);
+  timer = setInterval(cek, 8000);
   cek();
 })();

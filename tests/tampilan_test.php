@@ -17,6 +17,19 @@ function test_teks_sisa_antrean()
     sama('12 pasien lagi sebelum Anda', teks_sisa_antrean(12), 'banyak');
 }
 
+// Kasus yang sama diuji di tests/js/karcis_test.js agar PHP dan JS seragam.
+function test_keadaan_karcis()
+{
+    require_once __DIR__ . '/../includes/antrean.php';
+    sama(['teks' => '5 pasien lagi sebelum Anda', 'dekat' => false, 'lewat' => false], keadaan_karcis('menunggu', 5, 3, true), 'masih jauh');
+    sama(['teks' => '3 pasien lagi sebelum Anda', 'dekat' => true, 'lewat' => false], keadaan_karcis('hadir', 3, 3, true), 'dekat');
+    sama(['teks' => '2 pasien lagi sebelum Anda', 'dekat' => false, 'lewat' => false], keadaan_karcis('menunggu', 2, 3, false), 'bukan hari ini');
+    sama(['teks' => 'Silakan masuk ke ruang periksa', 'dekat' => true, 'lewat' => false], keadaan_karcis('diperiksa', 0, 3, true), 'dipanggil');
+    sama(['teks' => 'Anda ditandai tidak hadir', 'dekat' => false, 'lewat' => true], keadaan_karcis('tidak_hadir', 0, 3, true), 'tidak hadir');
+    sama(['teks' => 'Pemeriksaan selesai', 'dekat' => false, 'lewat' => true], keadaan_karcis('selesai', 0, 3, true), 'selesai');
+    sama(['teks' => 'Reservasi dibatalkan', 'dekat' => false, 'lewat' => true], keadaan_karcis('batal', 0, 3, true), 'batal');
+}
+
 function test_ikon_poli_dan_menu()
 {
     require_once __DIR__ . '/../includes/ikon.php';

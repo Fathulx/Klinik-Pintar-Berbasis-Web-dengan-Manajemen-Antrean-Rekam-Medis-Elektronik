@@ -15,6 +15,23 @@ function test_reservasi_lewat_tanggal_tidak_dianggap_aktif()
     sama('hadir', $riwayat[0]['status'], 'status apa adanya');
 }
 
+// Data untuk pembaruan langsung karcis: status terkini reservasi hari ini dan
+// mendatang, termasuk yang baru saja selesai atau ditandai tidak hadir.
+function test_antrean_terkini_memuat_perubahan_status()
+{
+    $pdo = test_pdo();
+    $d = buat_reservasi_uji($pdo, '2026-11-14', '08:00', ['menunggu', 'tidak_hadir']);
+    $lama = buat_reservasi_uji($pdo, '2026-11-01', '08:00', ['selesai']);
+
+    $pasienA = $d['reservasi'][1]['pasien_id'];
+    $pasienB = $d['reservasi'][2]['pasien_id'];
+    $a = antrean_pasien_terkini($pdo, $pasienA, '2026-11-14');
+    sama([['id' => $d['reservasi'][1]['id'], 'status' => 'menunggu', 'di_depan' => 0]], $a, 'pasien A');
+    $b = antrean_pasien_terkini($pdo, $pasienB, '2026-11-14');
+    sama('tidak_hadir', $b[0]['status'], 'perubahan status ikut terkirim');
+    sama([], antrean_pasien_terkini($pdo, $lama['reservasi'][1]['pasien_id'], '2026-11-14'), 'riwayat lama tidak ikut');
+}
+
 function test_reservasi_hari_ini_dan_mendatang_tetap_aktif()
 {
     $pdo = test_pdo();
