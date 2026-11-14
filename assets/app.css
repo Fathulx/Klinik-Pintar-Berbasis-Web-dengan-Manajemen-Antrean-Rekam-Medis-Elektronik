@@ -481,6 +481,19 @@ tbody tr:hover {
   outline-offset: 2px;
 }
 
+/* Baris filter: kolom isian dan tombol di sebelahnya sama tinggi */
+.filter-bar input,
+.filter-bar select,
+.filter-bar button,
+.filter-bar .action-button {
+  min-height: 2.5rem;
+}
+
+.filter-bar .action-button {
+  padding-inline: 0.9rem;
+  font-size: 0.875rem;
+}
+
 @media (max-width: 767px) {
   .panel-desktop-menu {
     display: none;

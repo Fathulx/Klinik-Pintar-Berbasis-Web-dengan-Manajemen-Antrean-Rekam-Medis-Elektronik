@@ -87,7 +87,7 @@ require __DIR__ . '/../includes/panel_start.php';
   <?php endforeach; ?>
 </dl>
 
-<form method="get" class="activity-log-filters mt-6 flex flex-wrap items-end gap-3">
+<form method="get" class="filter-bar activity-log-filters mt-6 flex flex-wrap items-end gap-3">
   <div class="log-filter-action">
     <label class="block text-xs font-medium" for="aksi">Aksi</label>
     <select id="aksi" name="aksi" class="<?= $kelasInput ?>">
@@ -110,7 +110,7 @@ require __DIR__ . '/../includes/panel_start.php';
     <input id="q" name="q" value="<?= e($q) ?>" class="<?= $kelasInput ?>">
   </div>
   <div class="log-filter-buttons">
-    <button class="px-3 py-1.5 text-sm">Terapkan</button>
+    <button class="bg-klinik px-4 text-sm font-semibold text-white">Terapkan</button>
     <a class="action-button" href="<?= e(url('superadmin/log.php')) ?>">Atur ulang</a>
   </div>
 </form>

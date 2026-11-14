@@ -22,7 +22,7 @@ require __DIR__ . '/../includes/panel_start.php';
           Semoga hari Anda tetap sehat dan lancar. Berikut status antrean serta langkah cepat untuk booking kunjungan.
         </p>
       </div>
-      <div class="inline-flex items-center rounded-full border border-klinik/20 bg-white px-3 py-2 text-xs font-medium text-klinik shadow-sm">
+      <div class="inline-flex items-center self-start rounded-full border border-klinik/20 bg-white px-3 py-2 text-xs font-medium text-klinik shadow-sm md:self-auto">
         <?= $berikut ? 'Antrean aktif' : 'Siap reservasi' ?>
       </div>
     </div>

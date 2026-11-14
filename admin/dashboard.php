@@ -79,10 +79,17 @@ require __DIR__ . '/../includes/panel_start.php';
 <div class="mt-10 grid gap-10 lg:grid-cols-2">
   <section>
     <h2 class="font-serif text-xl font-bold">Reservasi 7 hari terakhir</h2>
-    <div class="mt-4 flex h-44 items-end gap-2 border-b border-garis">
+    <?php $totalPekan = array_sum(array_column($deret, 'n')); ?>
+    <div class="relative mt-4 flex h-44 items-end gap-2 border-b border-garis">
+      <?php if ($totalPekan === 0): ?>
+        <p class="absolute inset-x-0 top-1/3 text-center text-sm text-ink/60">
+          Belum ada reservasi dalam 7 hari terakhir.
+        </p>
+      <?php endif; ?>
       <?php foreach ($deret as $d): $hariIniBar = ($d['tgl'] === $hariIni); ?>
-        <div class="flex h-full flex-1 flex-col items-center justify-end">
-          <span class="mb-1 font-mono text-xs"><?= (int) $d['n'] ?></span>
+        <div class="flex h-full flex-1 flex-col items-center justify-end"
+             title="<?= e(tanggal_indonesia($d['tgl'])) ?>: <?= (int) $d['n'] ?> reservasi">
+          <span class="mb-1 font-mono text-xs <?= $d['n'] > 0 ? '' : 'text-ink/30' ?>"><?= (int) $d['n'] ?></span>
           <div class="w-full <?= $hariIniBar ? 'bg-bata' : 'bg-klinik' ?>"
                style="height: <?= $d['n'] > 0 ? max(4, (int) round($d['n'] / $maks * 100)) : 2 ?>%"></div>
         </div>
@@ -111,7 +118,7 @@ require __DIR__ . '/../includes/panel_start.php';
             </tr>
           <?php endforeach; ?>
           <?php if (!$praktik): ?>
-            <tr><td colspan="3" class="px-3 py-4 text-ink/60">Tidak ada jadwal praktik aktif hari ini.</td></tr>
+            <tr><td colspan="3" class="px-3 py-4 text-ink/60">Tidak ada jadwal praktik aktif hari ini. <a class="text-klinik underline" href="<?= e(url('admin/jadwal.php')) ?>">Atur jadwal</a></td></tr>
           <?php endif; ?>
         </tbody>
       </table>

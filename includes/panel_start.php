@@ -9,7 +9,7 @@ $aktif = isset($aktif) ? $aktif : '';
     <div class="panel-brand-row px-5 py-5">
       <div>
         <p class="font-serif text-xl font-bold text-klinik">Klinik Pintar</p>
-        <p class="mt-0.5 font-mono text-[11px] uppercase tracking-widest text-ink/60"><?= e(str_replace('_', ' ', $user['role'])) ?></p>
+        <p class="mt-0.5 font-mono text-[11px] uppercase tracking-widest text-ink/60"><?= e(['user' => 'Pasien', 'admin' => 'Admin', 'dokter' => 'Dokter', 'super_admin' => 'Super Admin'][$user['role']] ?? $user['role']) ?></p>
       </div>
       <details class="panel-mobile-menu panel-mobile-menu--overlay panel-mobile-menu--hamburger">
         <summary class="panel-mobile-menu__toggle" aria-label="Buka menu" aria-expanded="false">

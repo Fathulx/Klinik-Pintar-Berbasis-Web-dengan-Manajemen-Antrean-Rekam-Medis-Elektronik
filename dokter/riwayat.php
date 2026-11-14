@@ -39,13 +39,13 @@ require __DIR__ . '/../includes/panel_start.php';
 <h1 class="font-serif text-3xl font-bold text-klinik">Riwayat pasien</h1>
 <p class="mt-1 text-sm text-ink/70">Pasien yang pernah selesai Anda periksa (maksimal 100 terbaru).</p>
 
-<form method="get" class="mt-4 flex items-end gap-3">
+<form method="get" class="filter-bar mt-4 flex flex-wrap items-end gap-3">
   <div>
     <label class="block text-xs font-medium" for="q">Cari nama pasien</label>
     <input id="q" name="q" value="<?= e($q) ?>"
            class="mt-1 border border-garis bg-white px-3 py-1.5 text-sm focus:border-klinik focus:outline-none">
   </div>
-  <button class="px-3 py-1.5 text-sm">Cari</button>
+  <button class="bg-klinik px-4 text-sm font-semibold text-white">Cari</button>
 </form>
 
 <div class="mt-6 overflow-x-auto">

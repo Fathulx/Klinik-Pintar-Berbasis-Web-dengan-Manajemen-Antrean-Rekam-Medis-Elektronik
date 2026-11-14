@@ -1,3 +1,3 @@
   </main>
 </div>
-<?php require __DIR__ . '/footer.php'; ?>
+<?php $footerPanel = true; require __DIR__ . '/footer.php'; ?>

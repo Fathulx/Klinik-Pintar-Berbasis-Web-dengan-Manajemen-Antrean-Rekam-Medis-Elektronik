@@ -60,7 +60,7 @@ require __DIR__ . '/../includes/panel_start.php';
     </form>
   <?php endforeach; ?>
   <?php if (!$daftar): ?>
-    <p class="px-4 py-4 text-sm text-ink/60">Belum ada notifikasi.</p>
+    <p class="px-4 py-4 text-sm text-ink/60">Belum ada notifikasi. Pemberitahuan muncul di sini saat giliran antrean Anda sudah dekat.</p>
   <?php endif; ?>
 </div>
 <?php require __DIR__ . '/../includes/panel_end.php'; ?>

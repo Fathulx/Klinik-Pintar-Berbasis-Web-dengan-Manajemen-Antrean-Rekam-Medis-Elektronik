@@ -86,24 +86,26 @@ require __DIR__ . '/../includes/panel_start.php';
   tidak dapat diubah selama masih ada reservasi mendatang.
 </p>
 
-<div class="mt-6 grid gap-8 lg:grid-cols-3">
-  <section class="overflow-x-auto lg:col-span-2">
+<div class="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
+  <section class="overflow-x-auto">
     <table class="responsive-table w-full border border-garis bg-white text-left text-sm">
       <thead class="bg-paper font-mono text-[11px] uppercase tracking-widest text-ink/60">
         <tr>
-          <th class="px-3 py-2">Dokter</th><th class="px-3 py-2">Hari</th><th class="px-3 py-2">Jam</th>
+          <th class="px-3 py-2">Dokter</th><th class="px-3 py-2">Jadwal</th>
           <th class="px-3 py-2">Kuota</th><th class="px-3 py-2">Status</th><th class="px-3 py-2">Aksi</th>
         </tr>
       </thead>
       <tbody>
         <?php foreach ($daftar as $j): ?>
           <tr class="border-t border-garis align-top">
-            <td data-label="Dokter" class="px-3 py-2">
+            <td data-label="Dokter" class="min-w-[10.5rem] px-3 py-2">
               <p class="font-medium"><?= e($j['dokter']) ?></p>
               <p class="text-xs text-ink/60">Poli <?= e($j['nama_poli']) ?></p>
             </td>
-            <td data-label="Hari" class="px-3 py-2"><?= e($j['hari']) ?></td>
-            <td data-label="Jam" class="whitespace-nowrap px-3 py-2 font-mono text-xs"><?= e($j['jam_mulai']) ?> - <?= e($j['jam_selesai']) ?></td>
+            <td data-label="Jadwal" class="whitespace-nowrap px-3 py-2">
+              <p><?= e($j['hari']) ?></p>
+              <p class="font-mono text-xs text-ink/70"><?= e($j['jam_mulai']) ?> - <?= e($j['jam_selesai']) ?></p>
+            </td>
             <td data-label="Kuota" class="px-3 py-2 font-mono"><?= (int) $j['kuota'] ?></td>
             <td data-label="Status" class="px-3 py-2"><?= badge_status($j['aktif'] ? 'aktif' : 'nonaktif') ?></td>
             <td data-label="Aksi" class="whitespace-nowrap px-3 py-2">
@@ -127,7 +129,7 @@ require __DIR__ . '/../includes/panel_start.php';
           </tr>
         <?php endforeach; ?>
         <?php if (!$daftar): ?>
-          <tr><td colspan="6" class="px-3 py-4 text-ink/60">Belum ada jadwal praktik.</td></tr>
+          <tr><td colspan="5" class="px-3 py-4 text-ink/60">Belum ada jadwal praktik. Tambahkan lewat formulir di samping.</td></tr>
         <?php endif; ?>
       </tbody>
     </table>

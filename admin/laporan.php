@@ -130,7 +130,7 @@ require __DIR__ . '/../includes/panel_start.php';
   <p class="mt-3 border border-bata bg-bata/10 px-3 py-2 text-sm text-bata"><?= e($catatan) ?></p>
 <?php endif; ?>
 
-<form method="get" class="mt-6 flex flex-wrap items-end gap-3 print:hidden">
+<form method="get" class="filter-bar mt-6 flex flex-wrap items-end gap-3 print:hidden">
   <div>
     <label class="block text-xs font-medium" for="dari">Dari</label>
     <input id="dari" name="dari" type="date" value="<?= e($dari) ?>" class="<?= $kelasInput ?> font-mono">
@@ -157,14 +157,14 @@ require __DIR__ . '/../includes/panel_start.php';
       <?php endforeach; ?>
     </select>
   </div>
-  <button class="px-3 py-1.5 text-sm">Terapkan</button>
+  <button class="bg-klinik px-4 text-sm font-semibold text-white">Terapkan</button>
   <a class="action-button" href="<?= e(url('admin/laporan.php')) ?>">Atur ulang</a>
 </form>
 
-<div class="mt-4 flex gap-3 print:hidden">
-  <a class="bg-klinik px-4 py-2 text-sm font-medium text-white hover:bg-ink"
+<div class="mt-4 flex flex-wrap gap-2 print:hidden">
+  <a class="action-button"
      href="<?= e(url('admin/laporan.php?' . $qs . '&export=csv')) ?>">Unduh CSV</a>
-  <button type="button" onclick="window.print()" class="px-4 py-2 text-sm">Cetak</button>
+  <button type="button" onclick="window.print()" class="action-button">Cetak</button>
 </div>
 
 <dl class="stat-grid mt-6 grid grid-cols-2 gap-3 md:grid-cols-5">

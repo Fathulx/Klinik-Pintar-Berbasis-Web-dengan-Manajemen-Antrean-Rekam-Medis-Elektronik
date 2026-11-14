@@ -80,13 +80,13 @@ require __DIR__ . '/../includes/panel_start.php';
 <h1 class="font-serif text-3xl font-bold text-klinik">Antrean</h1>
 <p class="mt-1 text-sm text-ink/70"><?= e(tanggal_indonesia($tanggal)) ?></p>
 
-<form method="get" class="mt-4 flex flex-wrap items-end gap-3">
+<form method="get" class="filter-bar mt-4 flex flex-wrap items-end gap-3">
   <div>
     <label class="block text-xs font-medium" for="tanggal">Tanggal</label>
     <input id="tanggal" name="tanggal" type="date" value="<?= e($tanggal) ?>"
            class="mt-1 border border-garis bg-white px-3 py-1.5 font-mono text-sm focus:border-klinik focus:outline-none">
   </div>
-  <button class="px-3 py-1.5 text-sm">Tampilkan</button>
+  <button class="bg-klinik px-4 text-sm font-semibold text-white">Tampilkan</button>
   <a class="action-button" href="<?= e(url('admin/antrean.php')) ?>">Hari ini</a>
 </form>
 
@@ -148,6 +148,6 @@ require __DIR__ . '/../includes/panel_start.php';
 <?php endforeach; ?>
 
 <?php if (!$grup): ?>
-  <p class="mt-8 text-sm text-ink/60">Tidak ada reservasi pada tanggal ini.</p>
+  <p class="mt-8 text-sm text-ink/70">Tidak ada reservasi pada tanggal ini. Pilih tanggal lain, atau periksa <a class="text-klinik underline" href="<?= e(url('admin/jadwal.php')) ?>">jadwal praktik</a> bila pasien belum bisa memesan.</p>
 <?php endif; ?>
 <?php require __DIR__ . '/../includes/panel_end.php'; ?>
