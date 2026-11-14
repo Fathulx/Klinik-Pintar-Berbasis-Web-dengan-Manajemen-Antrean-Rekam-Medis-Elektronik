@@ -83,6 +83,23 @@ function reservasi_pasien($pdo, $pasienId, $aktifSaja, $hariIni = null)
     return $st->fetchAll();
 }
 
+// Dokter menandai pasien yang sudah dipanggil (status diperiksa) tetapi tidak
+// masuk ruang periksa sebagai tidak hadir, agar antrean bisa berlanjut.
+// Hanya pasien dokter itu sendiri, dan ditolak bila catatan pemeriksaan sudah
+// disimpan (selesaikan pemeriksaan saja). Mengembalikan true bila berhasil.
+function dokter_tandai_tidak_datang(PDO $pdo, $dokterId, $reservasiId)
+{
+    $up = $pdo->prepare(
+        "UPDATE reservasi r
+         JOIN jadwal_dokter j ON j.id = r.jadwal_id
+         LEFT JOIN rekam_medis rm ON rm.reservasi_id = r.id
+         SET r.status = 'tidak_hadir'
+         WHERE r.id = ? AND j.dokter_id = ? AND r.status = 'diperiksa' AND rm.id IS NULL"
+    );
+    $up->execute([(int) $reservasiId, (int) $dokterId]);
+    return $up->rowCount() > 0;
+}
+
 // Membuat reservasi. Baris jadwal dikunci (FOR UPDATE) sehingga dua pasien
 // tidak bisa mengambil kuota terakhir bersamaan. Batasan unik di tabel
 // reservasi menjadi pengaman kedua.

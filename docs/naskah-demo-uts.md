@@ -50,7 +50,12 @@ Perkiraan durasi: 10 menit demo + tanya jawab. Semua akun demo memakai password
 - Tekan **Konfirmasi hadir**. Pesan berhasil muncul lalu hilang sendiri.
 
 **3. Dokter memeriksa (Edge), sekitar 2 menit**
-- **Antrean Hari Ini**: tekan **Panggil** pada pasien tadi.
+- **Antrean Hari Ini**: tombol **Panggil** muncul sendiri begitu admin
+  mengonfirmasi hadir (halaman dokter juga diperbarui otomatis). Tekan **Panggil**.
+- Bila ditanya "bagaimana kalau pasien dipanggil tapi tidak masuk?": dokter
+  menekan **Tidak datang**, antrean bergeser dan pasien berikutnya diberi
+  notifikasi. Pembagian tugas: admin mencatat kedatangan, dokter memanggil dan
+  menyelesaikan pemeriksaan.
 - Isi keluhan, hasil pemeriksaan, dan satu obat. Tekan
   **Selesaikan dan kunci**. Jelaskan: rekam medis yang sudah dikunci tidak bisa
   diubah lagi.

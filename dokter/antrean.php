@@ -1,6 +1,11 @@
 <?php
+// pengambilan ulang otomatis (assets/antrean_langsung.js) tidak memperpanjang sesi
+if (isset($_SERVER['HTTP_X_ANTREAN_LANGSUNG'])) {
+    define('SESI_TANPA_PERPANJANG', true);
+}
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/antrean.php';
+require_once __DIR__ . '/../includes/notifikasi.php';
 
 $user = require_role('dokter');
 $pdo  = db();
@@ -12,6 +17,19 @@ if (!$dokterId) {
     exit('Data dokter tidak ditemukan. Hubungi admin.');
 }
 $hariIni = date('Y-m-d');
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && post('aksi') === 'tidak_datang') {
+    csrf_verify();
+    $id = (int) post('id');
+    if (dokter_tandai_tidak_datang($pdo, $dokterId, $id)) {
+        catat_log('dokter_tidak_datang', 'reservasi ' . $id);
+        picu_notif_antrean($pdo); // antrean bergeser: kabari pasien berikutnya
+        set_flash('Pasien ditandai tidak datang. Silakan panggil pasien berikutnya.');
+    } else {
+        set_flash('Tidak dapat ditandai. Bila catatan pemeriksaan sudah disimpan, selesaikan pemeriksaannya.', 'error');
+    }
+    redirect('dokter/antrean.php');
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && post('aksi') === 'panggil') {
     csrf_verify();
@@ -80,7 +98,11 @@ require __DIR__ . '/../includes/panel_start.php';
 ?>
 <h1 class="font-serif text-3xl font-bold text-klinik">Antrean hari ini</h1>
 <p class="mt-1 text-sm text-ink/70"><?= e(tanggal_indonesia($hariIni)) ?></p>
+<p id="antrean-langsung-ket" class="mt-1 text-xs text-ink/60" aria-live="polite">
+  Daftar ini diperbarui otomatis setiap 10 detik.
+</p>
 
+<div id="daftar-antrean" data-langsung="1">
 <dl class="stat-grid mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
   <?php foreach ($label as $kunci => $nama): ?>
     <div class="bg-white p-4">
@@ -97,7 +119,7 @@ require __DIR__ . '/../includes/panel_start.php';
     </thead>
     <tbody>
       <?php foreach ($baris as $r): ?>
-        <tr class="border-t border-garis">
+        <tr class="border-t border-garis" data-reservasi="<?= (int) $r['id'] ?>" data-status="<?= e($r['status']) ?>">
           <td data-label="Nomor" class="px-3 py-2 font-mono font-semibold text-bata"><?= e(kode_antrean($r['nama_poli'], $r['no_antrean'])) ?></td>
           <td data-label="Pasien" class="px-3 py-2">
             <?= e($r['pasien']) ?>
@@ -118,6 +140,13 @@ require __DIR__ . '/../includes/panel_start.php';
             <?php elseif ($r['status'] === 'diperiksa'): ?>
               <a class="bg-bata px-3 py-1 text-xs font-medium text-white hover:bg-ink"
                  href="<?= e(url('dokter/periksa.php?id=' . (int) $r['id'])) ?>">Isi pemeriksaan</a>
+              <form method="post" class="ml-2 inline"
+                    onsubmit="return confirm('Pasien sudah dipanggil tetapi tidak masuk? Tandai tidak datang agar antrean berlanjut.')">
+                <?= csrf_field() ?>
+                <input type="hidden" name="aksi" value="tidak_datang">
+                <input type="hidden" name="id" value="<?= (int) $r['id'] ?>">
+                <button class="action-button action-danger text-xs text-bata">Tidak datang</button>
+              </form>
             <?php elseif ($r['status'] === 'selesai'): ?>
               <a class="action-button" href="<?= e(url('dokter/periksa.php?id=' . (int) $r['id'])) ?>">Lihat</a>
             <?php else: ?>
@@ -132,4 +161,6 @@ require __DIR__ . '/../includes/panel_start.php';
     </tbody>
   </table>
 </div>
+</div>
+<script src="<?= e(url('assets/antrean_langsung.js?v=' . filemtime(__DIR__ . '/../assets/antrean_langsung.js'))) ?>" defer></script>
 <?php require __DIR__ . '/../includes/panel_end.php'; ?>
