@@ -2,15 +2,27 @@
 require_once __DIR__ . '/menu.php';
 require_once __DIR__ . '/ikon.php';
 require __DIR__ . '/header.php';
+require_once __DIR__ . '/akun_saya.php';
 $menu  = menu_panel($user['role']);
 $aktif = isset($aktif) ? $aktif : '';
+
+// Kartu akun di atas menu: inisial, nama, peran -> halaman Akun saya.
+$diAkun = $aktif === 'auth/akun.php';
+$kartuAkun = '<div class="kartu-akun">'
+    . '<a href="' . e(url('auth/akun.php')) . '" class="kartu-akun__tautan' . ($diAkun ? ' is-aktif' : '') . '"'
+    . ($diAkun ? ' aria-current="page"' : '') . ' aria-label="Akun saya: ' . e($user['nama']) . '">'
+    . '<span class="akun-avatar" aria-hidden="true">' . e(inisial_nama($user['nama'])) . '</span>'
+    . '<span class="min-w-0"><span class="kartu-akun__nama">' . e($user['nama']) . '</span>'
+    . '<span class="kartu-akun__peran">' . e(label_peran($user['role'])) . '</span></span></a>'
+    . tombol_tema_html() . '</div>';
+$tombolKeluar = '<form method="post" action="' . e(url('auth/logout.php')) . '" class="menu-keluar">'
+    . csrf_field() . '<button class="menu-tautan">' . ikon('keluar') . '<span>Keluar</span></button></form>';
 ?>
 <div class="flex flex-1 flex-col md:flex-row">
   <aside class="border-b border-garis bg-white md:w-60 md:shrink-0 md:border-b-0 md:border-r print:hidden">
     <div class="panel-brand-row px-5 py-5">
       <div>
         <a href="<?= e(url(dashboard_path($user['role']))) ?>" class="merek"><span class="merek__tanda" aria-hidden="true"></span>Klinik Pintar</a>
-        <p class="mt-0.5 pl-[2.3rem] text-[13px] font-semibold text-ink/60"><?= e(label_peran($user['role'])) ?></p>
       </div>
       <details class="panel-mobile-menu panel-mobile-menu--overlay panel-mobile-menu--hamburger">
         <summary class="panel-mobile-menu__toggle" aria-label="Buka menu" aria-expanded="false">
@@ -18,6 +30,7 @@ $aktif = isset($aktif) ? $aktif : '';
         </summary>
         <div class="panel-mobile-menu__backdrop" aria-hidden="true"></div>
         <div class="panel-mobile-menu__content">
+          <?= $kartuAkun ?>
           <nav class="flex gap-1 overflow-x-auto px-3 pb-3 md:block md:space-y-1 md:px-3 md:pb-5">
             <?php foreach ($menu as $m): $on = ($m[1] === $aktif); ?>
               <a href="<?= e(url($m[1])) ?>" class="menu-tautan <?= $on ? 'is-aktif border-klinik' : '' ?>"<?= $on ? ' aria-current="page"' : '' ?>>
@@ -25,14 +38,7 @@ $aktif = isset($aktif) ? $aktif : '';
               </a>
             <?php endforeach; ?>
           </nav>
-          <div class="panel-account-tools flex flex-wrap items-center gap-3 border-t border-garis px-5 py-4 text-sm md:block md:space-y-3">
-            <div class="akun-baris"><p class="font-medium"><?= e($user['nama']) ?></p><?= tombol_tema_html() ?></div>
-            <a href="<?= e(url('auth/ganti_password.php')) ?>" class="panel-account-link">Ganti password</a>
-            <form method="post" action="<?= e(url('auth/logout.php')) ?>">
-              <?= csrf_field() ?>
-              <button class="action-button border-ink hover:bg-ink hover:text-paper">Keluar</button>
-            </form>
-          </div>
+          <?= $tombolKeluar ?>
         </div>
       </details>
       <script>
@@ -112,6 +118,7 @@ $aktif = isset($aktif) ? $aktif : '';
       </script>
     </div>
     <div class="panel-desktop-menu">
+      <?= $kartuAkun ?>
       <nav class="space-y-1 px-3 pb-5">
         <?php foreach ($menu as $m): $on = ($m[1] === $aktif); ?>
           <a href="<?= e(url($m[1])) ?>" class="menu-tautan <?= $on ? 'is-aktif' : '' ?>"<?= $on ? ' aria-current="page"' : '' ?>>
@@ -119,14 +126,7 @@ $aktif = isset($aktif) ? $aktif : '';
           </a>
         <?php endforeach; ?>
       </nav>
-      <div class="space-y-3 border-t border-garis px-5 py-4 text-sm">
-        <div class="akun-baris"><p class="font-medium"><?= e($user['nama']) ?></p><?= tombol_tema_html() ?></div>
-        <a href="<?= e(url('auth/ganti_password.php')) ?>" class="block text-klinik underline underline-offset-4">Ganti password</a>
-        <form method="post" action="<?= e(url('auth/logout.php')) ?>">
-          <?= csrf_field() ?>
-          <button class="action-button border-ink hover:bg-ink hover:text-paper">Keluar</button>
-        </form>
-      </div>
+      <?= $tombolKeluar ?>
     </div>
   </aside>
   <main class="min-w-0 flex-1 px-4 py-8 md:px-8 md:py-10">

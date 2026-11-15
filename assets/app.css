@@ -2161,3 +2161,177 @@ html[data-tema="gelap"] .tombol-tema .ikon-matahari { display: block; }
     line-height: 1.25;
   }
 }
+
+/* ---------- Kartu akun di atas menu ---------- */
+.kartu-akun {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0.75rem 0.75rem;
+  border: 1px solid var(--garis);
+  border-radius: 0.9rem;
+  padding: 0.4rem 0.45rem 0.4rem 0.4rem;
+}
+
+.kartu-akun__tautan {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: 0.65rem;
+  padding: 0.3rem;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.kartu-akun__tautan:hover,
+.kartu-akun__tautan.is-aktif {
+  background: var(--sorot);
+}
+
+.kartu-akun__nama {
+  display: block;
+  overflow: hidden;
+  font-weight: 650;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kartu-akun__peran {
+  display: block;
+  color: var(--tinta-redup);
+  font-size: 0.8rem;
+  line-height: 1.25;
+}
+
+.akun-avatar {
+  display: inline-grid;
+  width: 2.3rem;
+  height: 2.3rem;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--tombol);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.akun-avatar--besar {
+  width: 4rem;
+  height: 4rem;
+  font-size: 1.35rem;
+}
+
+.kartu-akun .tombol-tema {
+  width: 2.1rem;
+  height: 2.1rem;
+}
+
+/* tombol Keluar di bawah menu, bergaya seperti butir menu */
+.menu-keluar {
+  margin: 0;
+  border-top: 1px solid var(--garis);
+  padding: 0.6rem 0.75rem 0.75rem;
+}
+
+.menu-keluar .menu-tautan,
+.menu-keluar .menu-tautan:hover:not(:disabled),
+.menu-keluar .menu-tautan:active {
+  width: 100%;
+  min-height: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--merah-teks);
+  transform: none;
+}
+
+.menu-keluar .menu-tautan:hover:not(:disabled) {
+  background: var(--waspada);
+}
+
+.menu-keluar .menu-tautan .ikon {
+  color: currentColor;
+}
+
+/* di laci HP: kartu akun penuh lebar di atas */
+.panel-mobile-menu--hamburger .kartu-akun {
+  margin: 0 0.75rem 0.6rem;
+}
+
+/* ---------- Halaman Akun saya ---------- */
+.akun-profil {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.akun-panel {
+  border-radius: 1rem;
+  background: var(--permukaan);
+  box-shadow: var(--bayang);
+  padding: 1.25rem 1.35rem;
+}
+
+.akun-rincian {
+  margin: 0;
+}
+
+.akun-rincian > div {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+  border-top: 1px solid var(--garis);
+  padding: 0.65rem 0;
+}
+
+.akun-rincian dt {
+  color: var(--tinta-redup);
+}
+
+.akun-rincian dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+/* Keluar: aturan tombol umum (button:not(...)) lebih kuat, jadi dikunci di sini */
+.menu-keluar button.menu-tautan:not(:disabled),
+.menu-keluar button.menu-tautan:hover:not(:disabled),
+.menu-keluar button.menu-tautan:active:not(:disabled) {
+  border: 0;
+  box-shadow: none;
+  transform: none;
+}
+
+.menu-keluar button.menu-tautan:not(:disabled) {
+  background: transparent;
+  color: var(--merah-teks);
+}
+
+.menu-keluar button.menu-tautan:hover:not(:disabled) {
+  background: var(--waspada);
+}
+
+/* laci HP: tombol tema di pojok kanan atas sejajar tombol tutup, nama boleh dua baris */
+.panel-mobile-menu--hamburger[open] .kartu-akun .tombol-tema {
+  position: absolute;
+  z-index: 2;
+  top: 0.85rem;
+  right: 0.85rem;
+}
+
+.panel-mobile-menu--hamburger .kartu-akun__nama {
+  white-space: normal;
+}
+
+/* nama panjang (mis. dengan gelar) turun ke baris kedua, tidak terpotong */
+.kartu-akun__nama {
+  overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
