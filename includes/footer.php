@@ -5,5 +5,6 @@
     </p>
   </footer>
   <script src="<?= e(url('assets/tombol.js?v=' . filemtime(__DIR__ . '/../assets/tombol.js'))) ?>" defer></script>
+  <script src="<?= e(url('assets/lihat_password.js?v=' . filemtime(__DIR__ . '/../assets/lihat_password.js'))) ?>" defer></script>
 </body>
 </html>

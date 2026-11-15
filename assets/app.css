@@ -2359,3 +2359,50 @@ html[data-tema="gelap"] .tombol-tema .ikon-matahari { display: block; }
   height: 1.15rem;
   stroke-width: 2.2;
 }
+
+/* ---------- Kolom password dengan ikon mata ---------- */
+.kolom-password {
+  position: relative;
+  display: block;
+}
+
+.kolom-password > input {
+  padding-right: 2.9rem !important;
+}
+
+/* aturan tombol umum (button:not(...)) lebih kuat, jadi dikunci di sini */
+.kolom-password > button.kolom-password__mata:not(:disabled),
+.kolom-password > button.kolom-password__mata:hover:not(:disabled),
+.kolom-password > button.kolom-password__mata:active:not(:disabled) {
+  position: absolute;
+  top: 50%;
+  right: 0.3rem;
+  display: inline-grid;
+  width: 2.4rem;
+  min-height: 0;
+  height: 2.4rem;
+  place-items: center;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  color: var(--tinta-redup);
+  transform: translateY(-50%);
+}
+
+.kolom-password > button.kolom-password__mata:hover:not(:disabled) {
+  background: var(--sorot);
+  color: var(--aksen);
+}
+
+/* kolom password di dalam label punya margin atas: sejajarkan tombol */
+.kolom-password > input[class*="mt-"] + button.kolom-password__mata:not(:disabled) {
+  top: calc(50% + 0.15rem);
+}
+
+/* Edge punya ikon mata sendiri: disembunyikan agar tidak dobel */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
