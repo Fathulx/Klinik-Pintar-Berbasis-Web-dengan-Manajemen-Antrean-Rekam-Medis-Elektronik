@@ -31,15 +31,11 @@ $judul = 'Antrean Saya';
 $aktif = 'user/antrean.php';
 require __DIR__ . '/../includes/panel_start.php';
 ?>
-<h1 class="font-serif text-3xl font-bold text-klinik">Antrean saya</h1>
-
-<?php if (in_array(date('Y-m-d'), array_column($aktifList, 'tanggal'), true)): ?>
-  <div class="mt-4 rounded-xl border border-klinik bg-klinik/10 px-4 py-3 text-sm text-klinik">
-    Anda akan diberi tahu saat antrean tinggal <?= (int) NOTIF_ANTREAN_SISA ?> pasien lagi,
-    lalu setiap kali antrean maju. Aktifkan notifikasi di perangkat agar tetap menerimanya
-    walau halaman ini ditutup.
-  </div>
-<?php endif; ?>
+<h1 class="font-serif text-4xl font-bold">Antrean saya</h1>
+<p class="mt-2 max-w-2xl text-ink/75">
+  Anda diberi tahu saat antrean tinggal <?= (int) NOTIF_ANTREAN_SISA ?> pasien lagi, setiap kali antrean maju,
+  dan saat dokter memanggil Anda. Karcis di halaman ini ikut berubah tanpa perlu dimuat ulang.
+</p>
 <?php require __DIR__ . '/../includes/push_panel.php'; ?>
 
 <?php if ($aktifList): ?>

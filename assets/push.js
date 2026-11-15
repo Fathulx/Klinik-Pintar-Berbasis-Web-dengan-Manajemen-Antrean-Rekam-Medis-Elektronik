@@ -46,8 +46,8 @@ if (typeof module !== 'undefined' && module.exports) {
     tombol.setAttribute('data-keadaan', keadaan);
     // tombol utama untuk mengaktifkan, tombol garis untuk mematikan
     tombol.className = keadaan === 'aktif'
-      ? 'px-4 py-2 text-sm font-medium'
-      : 'bg-klinik px-4 py-2 text-sm font-medium text-white';
+      ? 'action-button'
+      : 'bg-klinik px-4 py-2 text-sm font-semibold text-white';
     panel.hidden = false;
   }
 

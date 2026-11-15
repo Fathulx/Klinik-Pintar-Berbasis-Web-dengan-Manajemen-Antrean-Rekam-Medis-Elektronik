@@ -1882,3 +1882,45 @@ button[class*="bg-panggil"]:hover,
 a[class*="bg-panggil"]:hover {
   background: #FFC926;
 }
+
+/* super admin: angka utama memerah lembut bila ada kejadian rawan */
+.ringkasan__utama--waspada {
+  background: #FDEDEA;
+}
+
+.ringkasan__utama--waspada .ringkasan__label {
+  color: #A92A19;
+}
+
+.ringkasan__lain > .ringkasan__tautan {
+  display: flex;
+  align-items: center;
+}
+
+/* panel notifikasi perangkat: lonceng dalam lingkaran mint */
+.panel-push {
+  border-radius: 1rem;
+  box-shadow: var(--bayang);
+}
+
+.panel-push__ikon {
+  display: inline-grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--mint);
+  color: var(--mint-tinta);
+}
+
+/* layar sempit: teks panel notifikasi mendapat ruang, tombol turun ke bawah */
+.panel-push > div {
+  flex: 1 1 14rem;
+}
+
+@media (max-width: 640px) {
+  .panel-push [data-push-tombol] {
+    width: 100%;
+  }
+}
