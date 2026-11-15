@@ -174,7 +174,7 @@ $judul = 'Pemeriksaan';
 $aktif = 'dokter/antrean.php';
 require __DIR__ . '/../includes/panel_start.php';
 ?>
-<a class="action-button" href="<?= e(url('dokter/antrean.php')) ?>">Kembali ke antrean</a>
+<?= tombol_kembali_html(url('dokter/antrean.php'), 'Antrean hari ini') ?>
 
 <div class="mt-4 flex flex-wrap items-start gap-6 border border-garis bg-white p-5">
   <div>

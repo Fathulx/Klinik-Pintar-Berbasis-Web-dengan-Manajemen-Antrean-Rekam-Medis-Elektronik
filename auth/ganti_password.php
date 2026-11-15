@@ -49,7 +49,7 @@ if ($polos) {
     require __DIR__ . '/../includes/panel_start.php';
 }
 ?>
-<?php if ($polos): ?><main class="mx-auto w-full max-w-md flex-1 px-4 py-12"><?php else: ?><div class="max-w-md"><a class="text-sm font-semibold text-klinik underline" href="<?= e(url('auth/akun.php')) ?>">Kembali ke akun saya</a><?php endif; ?>
+<?php if ($polos): ?><main class="mx-auto w-full max-w-md flex-1 px-4 py-12"><?php else: ?><div class="max-w-md"><?= tombol_kembali_html(url('auth/akun.php'), 'Akun saya') ?><?php endif; ?>
   <h1 class="<?= $polos ? '' : 'mt-3 ' ?>font-serif text-4xl font-bold">Ganti password</h1>
   <?php if ($user['wajib_ganti']): ?>
     <p class="mt-2 text-sm text-bata">Akun Anda memakai password sementara. Ganti password sebelum melanjutkan.</p>

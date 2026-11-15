@@ -38,6 +38,9 @@ function test_ikon_poli_dan_menu()
     cek(ikon_poli('Penyakit Dalam') === ikon('jantung'), 'poli dalam');
     cek(ikon_poli('Umum') === ikon('stetoskop'), 'poli lain');
     cek(strpos(ikon('tidak-ada'), 'aria-hidden="true"') !== false, 'ikon dekoratif');
+    $k = tombol_kembali_html('/klinik/auth/akun.php', 'Akun saya');
+    cek(strpos($k, 'href="/klinik/auth/akun.php"') !== false && strpos($k, '<span>Akun saya</span>') !== false, 'tombol kembali');
+    cek(strpos(tombol_kembali_html('/x', '<b>'), '<b>') === false, 'teks tombol kembali di-escape');
     $t = tombol_tema_html();
     cek(strpos($t, 'data-tema-tombol') !== false && strpos($t, 'aria-label=') !== false, 'tombol tema berlabel');
     cek(strpos($t, 'ikon-bulan') !== false && strpos($t, 'ikon-matahari') !== false, 'dua ikon tema');

@@ -49,7 +49,7 @@ $judul = 'Rekam Medis';
 $aktif = 'user/riwayat.php';
 require __DIR__ . '/../includes/panel_start.php';
 ?>
-<a class="action-button" href="<?= e(url('user/riwayat.php')) ?>">Kembali ke riwayat</a>
+<?= tombol_kembali_html(url('user/riwayat.php'), 'Riwayat kunjungan') ?>
 
 <div class="mt-4 border border-garis bg-white p-5">
   <p class="text-[13px] font-semibold text-ink/60">Kunjungan</p>

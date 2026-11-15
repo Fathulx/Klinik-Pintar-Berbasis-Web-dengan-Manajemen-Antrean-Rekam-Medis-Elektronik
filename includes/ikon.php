@@ -18,6 +18,7 @@ function ikon($nama, $kelas = 'ikon')
         'periksa'   => '<rect x="5" y="4.5" width="14" height="16.5" rx="2.5"/><path d="M9 4.5V3h6v1.5M9 11h6M9 15h4"/>',
         'gigi'      => '<path d="M7.5 3C5 3 3.5 5 3.5 7.5c0 3 1.5 4.5 2 7.5.4 2.5 1 6 2.5 6s1.7-4 2.5-5.5c.4-.7.8-1 1.5-1s1.1.3 1.5 1c.8 1.5 1 5.5 2.5 5.5s2.1-3.5 2.5-6c.5-3 2-4.5 2-7.5C20.5 5 19 3 16.5 3c-2 0-2.7 1-4.5 1S9.5 3 7.5 3z"/>',
         'anak'      => '<circle cx="12" cy="13" r="7.5"/><path d="M9.5 12.5h.01M14.5 12.5h.01"/><path d="M9.3 16a3.6 3.6 0 0 0 5.4 0"/><path d="M12 5.5c0-1.6 1.1-2.8 2.6-2.8"/>',
+        'kembali'   => '<path d="M15 5l-7 7 7 7"/>',
         'keluar'    => '<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M10 16l-4-4 4-4M6 12h10"/>',
         'bulan'     => '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
         'matahari'  => '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>',
@@ -26,6 +27,13 @@ function ikon($nama, $kelas = 'ikon')
     $isi = isset($jalur[$nama]) ? $jalur[$nama] : $jalur['dokumen'];
     return '<svg class="' . e($kelas) . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"'
         . ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' . $isi . '</svg>';
+}
+
+// Tombol kembali ke halaman sebelumnya: panah kiri + nama tujuan.
+// $href sudah berupa URL lengkap (hasil url()).
+function tombol_kembali_html($href, $teks)
+{
+    return '<a class="tombol-kembali" href="' . e($href) . '">' . ikon('kembali') . '<span>' . e($teks) . '</span></a>';
 }
 
 // Tombol ganti tema terang/gelap (diatur oleh assets/tema.js).

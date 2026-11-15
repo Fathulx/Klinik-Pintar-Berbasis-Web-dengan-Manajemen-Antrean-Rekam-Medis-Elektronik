@@ -2335,3 +2335,27 @@ html[data-tema="gelap"] .tombol-tema .ikon-matahari { display: block; }
   overflow-wrap: anywhere;
   white-space: normal;
 }
+
+/* ---------- Tombol kembali: panah kiri + nama halaman tujuan ---------- */
+.tombol-kembali {
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: -0.45rem;
+  border-radius: 0.6rem;
+  padding: 0.3rem 0.7rem 0.3rem 0.45rem;
+  color: var(--aksen);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.tombol-kembali:hover {
+  background: var(--sorot);
+}
+
+.tombol-kembali .ikon {
+  width: 1.15rem;
+  height: 1.15rem;
+  stroke-width: 2.2;
+}
