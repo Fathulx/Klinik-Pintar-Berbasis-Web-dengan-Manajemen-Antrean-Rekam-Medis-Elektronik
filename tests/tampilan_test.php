@@ -38,6 +38,9 @@ function test_ikon_poli_dan_menu()
     cek(ikon_poli('Penyakit Dalam') === ikon('jantung'), 'poli dalam');
     cek(ikon_poli('Umum') === ikon('stetoskop'), 'poli lain');
     cek(strpos(ikon('tidak-ada'), 'aria-hidden="true"') !== false, 'ikon dekoratif');
+    $t = tombol_tema_html();
+    cek(strpos($t, 'data-tema-tombol') !== false && strpos($t, 'aria-label=') !== false, 'tombol tema berlabel');
+    cek(strpos($t, 'ikon-bulan') !== false && strpos($t, 'ikon-matahari') !== false, 'dua ikon tema');
     foreach (['super_admin', 'admin', 'dokter', 'user'] as $peran) {
         foreach (menu_panel($peran) as $m) {
             cek(isset($m[2]) && $m[2] !== '', "menu {$m[1]} punya ikon");

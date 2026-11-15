@@ -15,17 +15,31 @@
   <meta name="theme-color" content="#1B4F82">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Klinik Pintar">
+  <script>
+    // tema dipasang sebelum halaman digambar agar tidak berkedip terang
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('tema'); } catch (e) {}
+      if (t !== 'terang' && t !== 'gelap') {
+        t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'gelap' : 'terang';
+      }
+      document.documentElement.setAttribute('data-tema', t);
+    })();
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+    // Warna memakai variabel CSS (assets/app.css, :root dan [data-tema="gelap"])
+    // sehingga tema gelap cukup mengganti nilai variabelnya.
+    var w = function (nama) { return 'rgb(var(--w-' + nama + ') / <alpha-value>)'; };
     tailwind.config = {
       theme: {
         extend: {
           // Palet "ruang tunggu klinik": dinding abu kebiruan, biru papan
           // petunjuk, kuning layar panggilan, dan satu warna per poli.
           colors: {
-            paper: '#EEF3F4', ink: '#12293B', klinik: '#1B4F82',
-            bata: '#C8321F', garis: '#D5DEE2', panggil: '#F2B705',
-            layar: '#173A5E', mint: '#E4F3EE',
+            paper: w('paper'), ink: w('ink'), klinik: w('klinik'),
+            bata: w('bata'), garis: w('garis'), panggil: '#F2B705',
+            layar: '#173A5E', mint: w('mint'),
             poli: { umum: '#1B6FB8', gigi: '#0E8C83', anak: '#E07A1F', dalam: '#7A4EB0' }
           },
           // Plus Jakarta Sans (huruf karya desainer Indonesia) untuk teks dan
@@ -41,5 +55,6 @@
     }
   </script>
   <link rel="stylesheet" href="<?= e(url('assets/app.css?v=' . filemtime(__DIR__ . '/../assets/app.css'))) ?>">
+  <script src="<?= e(url('assets/tema.js?v=' . filemtime(__DIR__ . '/../assets/tema.js'))) ?>" defer></script>
 </head>
 <body class="bg-paper text-ink font-sans antialiased min-h-screen flex flex-col">

@@ -26,7 +26,7 @@ $aktif = isset($aktif) ? $aktif : '';
             <?php endforeach; ?>
           </nav>
           <div class="panel-account-tools flex flex-wrap items-center gap-3 border-t border-garis px-5 py-4 text-sm md:block md:space-y-3">
-            <p class="font-medium"><?= e($user['nama']) ?></p>
+            <div class="akun-baris"><p class="font-medium"><?= e($user['nama']) ?></p><?= tombol_tema_html() ?></div>
             <a href="<?= e(url('auth/ganti_password.php')) ?>" class="panel-account-link">Ganti password</a>
             <form method="post" action="<?= e(url('auth/logout.php')) ?>">
               <?= csrf_field() ?>
@@ -120,7 +120,7 @@ $aktif = isset($aktif) ? $aktif : '';
         <?php endforeach; ?>
       </nav>
       <div class="space-y-3 border-t border-garis px-5 py-4 text-sm">
-        <p class="font-medium"><?= e($user['nama']) ?></p>
+        <div class="akun-baris"><p class="font-medium"><?= e($user['nama']) ?></p><?= tombol_tema_html() ?></div>
         <a href="<?= e(url('auth/ganti_password.php')) ?>" class="block text-klinik underline underline-offset-4">Ganti password</a>
         <form method="post" action="<?= e(url('auth/logout.php')) ?>">
           <?= csrf_field() ?>
